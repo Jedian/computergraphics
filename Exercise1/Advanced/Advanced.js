@@ -53,6 +53,11 @@ function f_c(z, c) {
 }
 
 function countIterations(start_z, c, max_iter) {
+    // TODO 1.4a):      Count iterations needed for the sequence to diverge.
+    //                  z is declared diverged as soon as its absolute value
+    //                  exceeds 2. If the sequence does not diverge during
+    //                  the first max_iter iterations, return max_iter. Use
+    //                  function f_c().
     var z = start_z;
     var iter = 0;
     while(abs(z) <= 2 && iter < max_iter){
@@ -60,11 +65,6 @@ function countIterations(start_z, c, max_iter) {
       z = f_c(z, c);
     }
     return iter;
-    // TODO 1.4a):      Count iterations needed for the sequence to diverge.
-    //                  z is declared diverged as soon as its absolute value
-    //                  exceeds 2. If the sequence does not diverge during
-    //                  the first max_iter iterations, return max_iter. Use
-    //                  function f_c().
 
 
 
@@ -94,8 +94,8 @@ function getColorForIter(iter) {
 
     // return color according to chosen color scheme
     var color = [128, 128, 128];
-    var prop = 1-(iter/max_iter);
 
+    var prop = 1-(iter/max_iter);
     if (colorscheme == "black & white") {
         // TODO 1.4a):      Return the correct color for the iteration count
         //                  stored in iter. Pixels corresponding to complex
@@ -118,8 +118,6 @@ function getColorForIter(iter) {
             color = [0, 0, 0];;
         } else {
             color = [prop*255, prop*255, prop*255];
-            //var prop = 1-(((iter*100)+1/max_iter)/10000);
-            //color = [-63  + prop*255, -63  + prop*255,-63 + prop*255];
         }
 
 
@@ -139,6 +137,13 @@ function getColorForIter(iter) {
 
 
     } else { // rainbow
+        // TODO 1.4b):      Choose a rainbow color according to the given
+        //                  iteration count in relation to the maximum
+        //                  iteration count. Colors should change from blue
+        //                  (for very few needed iterations) over violet, pink,
+        //                  red, yellow and green back to blue (for lots of
+        //                  needed iterations). Use the HSV model and convert
+        //                  HSV to RGB colors using function hsv2rgb.
         var color = [0, 1, 255];
         if(iter == max_iter){
             color = [0, 0, 0];
@@ -147,15 +152,6 @@ function getColorForIter(iter) {
             color[0] = (((prop)*360)+240)%360; //240 is a constant to start in blue
             color = hsv2rgb(color);
         }
-        // TODO 1.4b):      Choose a rainbow color according to the given
-        //                  iteration count in relation to the maximum
-        //                  iteration count. Colors should change from blue
-        //                  (for very few needed iterations) over violet, pink,
-        //                  red, yellow and green back to blue (for lots of
-        //                  needed iterations). Use the HSV model and convert
-        //                  HSV to RGB colors using function hsv2rgb.
-
-
 
     }
 
