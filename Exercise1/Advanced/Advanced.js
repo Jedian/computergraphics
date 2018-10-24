@@ -61,19 +61,20 @@ function countIterations(start_z, c, max_iter) {
     var z = start_z;
     var iter = 0;
     while(abs(z) <= 2 && iter < max_iter){
-      iter++;
-      z = f_c(z, c);
+        iter++;
+        z = f_c(z, c);
     }
-    return iter;
 
 
 
     // TODO 1.4b):      Change the return value of this function to avoid
     //                  banding. Return the unchanged number of iterations
     //                  for abs(z) < 1;
+    if((abs(z) < 1) || (iter == max_iter)) 
+        return iter;
+    iter = iter + 1 - (Math.log(Math.log(abs(z)))/Math.log(2))
 
-
-
+    return iter;
 }
 
 
@@ -149,7 +150,7 @@ function getColorForIter(iter) {
             color = [0, 0, 0];
         } else {
             var prop = (iter/max_iter);
-            color[0] = (((prop)*360)+240)%360; //240 is a constant to start in blue
+            color[0] = (((prop)*360)+180)%360; //180 is a constant to start in blue
             color = hsv2rgb(color);
         }
 
@@ -199,12 +200,11 @@ function mandelbrotSet(image) {
         var x = pixel % image.width;
         var y = image.height - pixel / image.width;
 
-        var c = new ComplexNumberFromCoords(x, y, 'mandelbrot_canvas');
-
         // TODO 1.4a):      Replace the following line by creation of the
         //                  Mandelbrot set. Use functions countIterations() 
         //                  getColorForIter().
         //var rgb = [(c.re + 0.5) * 255, (c.im + 0.5) * 255, 0];
+        var c = new ComplexNumberFromCoords(x, y, 'mandelbrot_canvas');
         var rgb = getColorForIter(countIterations(new ComplexNumber(0, 0), c, max_iter));
 
         image.data[i] = rgb[0];
@@ -225,7 +225,9 @@ function juliaSet(image) {
         //                  Julia set for c = juliaC (global variable). Use
         //                  functions ComplexNumber(),
         //                  countIterations() and getColorForIter().
-        var rgb = [128, 128, 128];
+        var z = new ComplexNumberFromCoords(x, y, 'julia_canvas');
+        var rgb = getColorForIter(countIterations(z, juliaC, max_iter));
+        //var rgb = [128, 128, 128];
 
 
 
@@ -315,10 +317,9 @@ function setupMandelbrot(canvas) {
     canvas.addEventListener('mousemove', onMouseMove, false);
     canvas.addEventListener('mouseup', onMouseUp, false);
 
-
     // TODO 1.4c):      Uncomment the following line to enable zooming.
 
-    //canvas.addEventListener('DOMMouseScroll', onMouseWheel, false);
+    canvas.addEventListener('DOMMouseScroll', onMouseWheel, false);
 
 }
 
@@ -364,9 +365,8 @@ function onMouseDown(e) {
         //                  start the dragging process. Use the global
         //                  variables dragging (bool) and lastPoint (two
         //                  dimensional vector).
-
-
-
+        dragging = true;
+        lastPoint = [x, y];
     }
 
 }
@@ -394,9 +394,11 @@ function onMouseMove(e) {
         //                  shift the plane accordingly. To do so, change
         //                  the global variable center which is used to
         //                  compute the complex number corresponding to a pixel.
-
-
-
+        var complexlp = new ComplexNumberFromCoords(lastPoint[0], lastPoint[1], 'mandelbrot_canvas');
+        var complexhp = new ComplexNumberFromCoords(x, y, 'mandelbrot_canvas');
+        var complexdist = (sub(complexlp, complexhp));
+        center = add(center, complexdist);
+        lastPoint = [x,y];
         // rerender image
         RenderMandelbrotSet();
     }
@@ -405,7 +407,7 @@ function onMouseMove(e) {
 function onMouseUp(e) {
     // TODO 1.4c):      Prevent dragging of the plane once the mouse is
     //                  not pressed anymore.
-
+    dragging = false;
 
 
 }
