@@ -47,29 +47,16 @@ function abs(x) {
 /////////  Magic Math  //////////
 /////////////////////////////////
 function f_c(z, c) {
-    // TODO 1.4a):      Compute the result of function f_c for a given z and
-    //                  a given c. Use the helper functions.
     return add(mult(z, z), c);
 }
 
 function countIterations(start_z, c, max_iter) {
-    // TODO 1.4a):      Count iterations needed for the sequence to diverge.
-    //                  z is declared diverged as soon as its absolute value
-    //                  exceeds 2. If the sequence does not diverge during
-    //                  the first max_iter iterations, return max_iter. Use
-    //                  function f_c().
     var z = start_z;
     var iter = 0;
     while(abs(z) <= 2 && iter < max_iter){
         iter++;
         z = f_c(z, c);
     }
-
-
-
-    // TODO 1.4b):      Change the return value of this function to avoid
-    //                  banding. Return the unchanged number of iterations
-    //                  for abs(z) < 1;
     if((abs(z) < 1) || (iter == max_iter)) 
         return iter;
     iter = iter + 1 - (Math.log(Math.log(abs(z)))/Math.log(2))
@@ -98,53 +85,24 @@ function getColorForIter(iter) {
 
     var prop = 1-(iter/max_iter);
     if (colorscheme == "black & white") {
-        // TODO 1.4a):      Return the correct color for the iteration count
-        //                  stored in iter. Pixels corresponding to complex
-        //                  numbers for which the sequence diverges should be
-        //                  shaded white. Use the global variable max_iter.
         if(iter == max_iter)
             color = [0, 0, 0];
         else
             color = [255, 255, 255];
-
-
-
     } else if (colorscheme == "greyscale") {
-        // TODO 1.4b):      Choose a greyscale color according to the given
-        //                  iteration count in relation to the maximum
-        //                  iteration count. The more iterations are needed
-        //                  for divergence, the darker the color should be.
-        //                  Be aware of integer division!
         if(iter == max_iter) {
             color = [0, 0, 0];;
         } else {
             color = [prop*255, prop*255, prop*255];
         }
-
-
-
     } else if (colorscheme == "underwater") {
-        // TODO 1.4b):      Choose a color between blue and green according
-        //                  to the given iteration count in relation to the
-        //                  maximum iteration count. The more iterations are
-        //                  needed for divergence, the more green and less
-        //                  blue the color should be.
         if(iter == max_iter) {
             color = [0, 0, 0];
         } else {
             var prop = 1-(iter/max_iter);
             color = [0, (1-prop)*255, prop*255];
         }
-
-
     } else { // rainbow
-        // TODO 1.4b):      Choose a rainbow color according to the given
-        //                  iteration count in relation to the maximum
-        //                  iteration count. Colors should change from blue
-        //                  (for very few needed iterations) over violet, pink,
-        //                  red, yellow and green back to blue (for lots of
-        //                  needed iterations). Use the HSV model and convert
-        //                  HSV to RGB colors using function hsv2rgb.
         var color = [0, 1, 255];
         if(iter == max_iter){
             color = [0, 0, 0];
@@ -200,10 +158,6 @@ function mandelbrotSet(image) {
         var x = pixel % image.width;
         var y = image.height - pixel / image.width;
 
-        // TODO 1.4a):      Replace the following line by creation of the
-        //                  Mandelbrot set. Use functions countIterations() 
-        //                  getColorForIter().
-        //var rgb = [(c.re + 0.5) * 255, (c.im + 0.5) * 255, 0];
         var c = new ComplexNumberFromCoords(x, y, 'mandelbrot_canvas');
         var rgb = getColorForIter(countIterations(new ComplexNumber(0, 0), c, max_iter));
 
@@ -221,10 +175,6 @@ function juliaSet(image) {
         var x = pixel % image.width;
         var y = image.height - pixel / image.width;
 
-        // TODO 1.4d):       Replace the following line by creation of the
-        //                  Julia set for c = juliaC (global variable). Use
-        //                  functions ComplexNumber(),
-        //                  countIterations() and getColorForIter().
         var z = new ComplexNumberFromCoords(x, y, 'julia_canvas');
         var rgb = getColorForIter(countIterations(z, juliaC, max_iter));
 
@@ -358,10 +308,6 @@ function onMouseDown(e) {
             loopVariable = 0;
         }
     } else {
-        // TODO 1.4c):      Store the hit point as pixel coordinates and
-        //                  start the dragging process. Use the global
-        //                  variables dragging (bool) and lastPoint (two
-        //                  dimensional vector).
         dragging = true;
         lastPoint = [x, y];
     }
@@ -385,12 +331,6 @@ function onMouseMove(e) {
         var y = e.clientY - rect.top;
         y = canvas.height - y;
 
-        // TODO 1.4c):      Convert both last and current hit point to
-        //                  their corresponding complex numbers, compute
-        //                  their distance (also as a complex number) and
-        //                  shift the plane accordingly. To do so, change
-        //                  the global variable center which is used to
-        //                  compute the complex number corresponding to a pixel.
         var complexlp = new ComplexNumberFromCoords(lastPoint[0], lastPoint[1], 'mandelbrot_canvas');
         var complexhp = new ComplexNumberFromCoords(x, y, 'mandelbrot_canvas');
         var complexdist = (sub(complexlp, complexhp));
@@ -402,8 +342,6 @@ function onMouseMove(e) {
 }
 
 function onMouseUp(e) {
-    // TODO 1.4c):      Prevent dragging of the plane once the mouse is
-    //                  not pressed anymore.
     dragging = false;
 
 
