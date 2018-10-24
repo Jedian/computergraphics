@@ -227,9 +227,6 @@ function juliaSet(image) {
         //                  countIterations() and getColorForIter().
         var z = new ComplexNumberFromCoords(x, y, 'julia_canvas');
         var rgb = getColorForIter(countIterations(z, juliaC, max_iter));
-        //var rgb = [128, 128, 128];
-
-
 
         image.data[i] = rgb[0];
         image.data[i + 1] = rgb[1];
