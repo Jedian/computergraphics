@@ -1,6 +1,8 @@
 Pro:
-- 
+- Simple idea.
+- Easy to implement.
 
 Cons:
-- 
-- 
+- Not the most efficient method, on the worst case it can possibly check 4 times
+every pixel in the flood area.
+- Recursion in large flood areas can cause stack overflows.
