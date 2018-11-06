@@ -1,0 +1,288 @@
+﻿
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="./resources/css/print.css">
+
+    <meta name="lecture" content="Computer Graphics">
+    <meta name="exerciseNr" content="3">
+    <meta name="exercisePrefix" content="Exercise">
+    <meta name="term" content="Winter Term 2017/18">
+    <meta name="dueDate" content="November 9, 2018, 11:59 am">
+
+    <script type="text/javascript" async
+            src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+    </script>
+
+    <script type="text/javascript" src="./resources/js/sheet.js"></script>
+
+
+    <script type="text/javascript" src="./Advanced/gl-Matrix.js"></script>
+    <script type="text/javascript" src="./Advanced/helper.js"></script>
+
+
+
+</head>
+
+
+<body>
+
+    <page size="A4">
+        <content>
+            <exercise prefix="Basic Exercises" title="GPU Rendering using WebGL" points="10">
+
+                <task title="Rasterize a Circle using Triangles" points="2" submitfile="Basic1.js">
+
+                    <figure class="floatRight">
+                        <img src="images/circle_from_triangles.png" height="160" alt="circle">
+                    </figure>
+
+                    <figure class="floatRight">
+                        <canvas id="canvasCircle" width="160" height="160" data-call="webGLStart" data-call-src="./Basic/Basic1.js">
+                            <shader id="shader-vs" type="vertex" src="./Basic/shader.vs"></shader>
+                            <shader id="shader-fs" type="fragment" src="./Basic/shader.fs"></shader>
+                        </canvas>
+                    </figure>
+
+                    <p>
+                        The aim of the first task is to rasterize a circle using triangles.
+                        The result should be similar to the <code>arc()</code> and <code>SVG</code> circles you know from the first exercise sheet.
+                        On the right, you can see a schematic of the circle construction from triangles.
+                    </p>
+
+                    <p>
+                        The canvas below only shows a single triangle so far.
+                        Change the code in <code>Basic1.js</code> to build a vertex buffer object and an index buffer object describing a circle
+                        with radius <code>r</code> (currently set to 0.7) around the center point <code>c</code> (currently set to [0.3, 0.2]).
+                    </p>
+                    <p>
+                        Each vertex should only be stored once - use the Indexed Face Set structure shown in the lecture to
+                        keep the vertex buffer small:
+                        Do not store points twice but store them once and reference them twice (or more times) using an index buffer.
+                    </p>
+                    <p>
+                        You can change the number of segments the circle is composed of by changing <code>slices</code>
+                        in order to debug your code.
+                    </p>
+                </task>
+
+
+
+                <task title="Vertex Attributes and Varying Variables" points="4" submitfile="Basic2.js, shader_wireframe.vs, shader_wireframe.fs">
+
+                    <div class="floatLeft">
+                        <img src="images/wireframe_triangle.png" height="180">
+                        <canvas id="canvasWireframe" width="180" height="180" data-call="webGLStart" data-call-src="./Basic/Basic2.js">
+                            <shader id="shaderWireFrame-vs" type="vertex" src="./Basic/shader_wireframe.vs"></shader>
+                            <shader id="shaderWireFrame-fs" type="fragment" src="./Basic/shader_wireframe.fs"></shader>
+                        </canvas>
+                    </div>
+                    <figure class="floatLeft">
+
+                    </figure>
+
+                    <p>
+                        The following task introduces you to different methods for variable passing between host program, vertex shader and fragment shader:
+                        vertex attributes and varying variables.
+                    </p>
+                    <p>
+                        The goal of the task is to reproduce the triangle on the left in the canvas in the middle by coloring the black triangle and only drawing its borders.
+                    </p>
+
+                    <subtask title="Color the Triangle" points=3>
+                        <p>
+                            A central property of geometry are so-called <b>vertex attributes</b>, which means vertex specific data.
+                            The most common and most important vertex attribute is the position, but arbitrary other attributes can be defined.
+                        </p>
+                        <p>
+                            In this subtask, you should define a color attribute and pass it to the shader program in order to color the triangle.
+                            You have to complete several steps to define and use this additional vertex attribute:
+                            <ul>
+                                <li>
+                                    in <code>Basic2.js</code>: Define a second attribute (in addition to the position) by extending <code>vertices</code>.
+                                    The color should be plain red, plain green and plain blue for the three vertices, as you can see in the image.
+                                    For the shader stage to know which of the entries in <code>vertices</code> belong to the position attribute,
+                                    define the strides and offsets for the position and color attributes using the three functions <code>gl.getAttribLocation()</code>,
+                                    <code>gl.enableVertexAttribArray()</code> and <code>gl.vertexAttribPointer()</code>.
+                                </li>
+                                <li>
+                                    in the vertex shader: Create an attribute whose name you can use for <code>gl.getAttribLocation()</code>.
+                                    This attribute will hold the additional color property of each vertex.
+                                    Create a <b>varying variable</b> and assign the color to it to interpolate the color for each pixel
+                                    and pass the interpolated value to the fragment shader.
+                                </li>
+                                <li>
+                                    in the fragment shader: Define the varying variable again to enable variable passing from the vertex shader.
+                                    Use this variable to color each pixel.
+                                </li>
+                            </ul>
+                        </p>
+                    </subtask>
+
+                    <subtask title="Switch to Wireframe Rendering" points=1>
+                        <p>
+                            The color attribute can also be interpreted as <a href="https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a-triangle/barycentric-coordinates">barycentric coordinates</a>:
+                            For each pixel inside the triangle, the three color values contain information about its distance to the three points.
+                            Use this information to only render the border of the triangle.
+                        </p>
+                    </subtask>
+
+                </task>
+
+
+
+                <task title="Rasterize a Circle by Cutting from a Quad" points="4" submitfile="Basic3.js, shader_circlefromquad.fs">
+
+                    <canvas id="canvasCircleFromQuad" class="floatRight" width="220" height="220" data-call="webGLStart"
+                            data-call-src="./Basic/Basic3.js">
+                        <shader id="shaderCircleFromQuad-vs" type="vertex" src="./Basic/shader_circlefromquad.vs"></shader>
+                        <shader id="shaderCircleFromQuad-fs" type="fragment" src="./Basic/shader_circlefromquad.fs"></shader>
+                    </canvas>
+
+
+                    <p>
+                        Data transfer between <b>CPU</b> and <b>GPU</b>, or between your JavaScript and shader code is a fundamental necessity.
+                        Besides the previously introduced <b>vertex attributes</b>, also constant data can be passed from the JavaScript code to the shader using so-called <b>uniform variables</b>.
+                        The values passed to the shaders using uniform variables are constant for all vertices / fragments of a draw call.
+                    </p>
+                    <p>
+                        These variables have to be declared in the respective shader[s] by declaring a global variable as <code>uniform</code>.
+                        In order to pass data to the shader, you have to retrieve its location using <code>gl.getUniformLocation()</code>.
+                        Using this location data can then be assigned using <code>gl.uniform*()</code>.
+                    </p>
+
+                    <p>
+                        In this task we render a circle using a fragment shader.
+                        Instead of a lot of triangles we render a single screen-space aligned quad.
+                        The quad is rasterized and can be shaded using the shader <code>shader_circlefromquad.fs</code>.
+
+                        Currently, we shade everything orange.
+                        We want you to render a smooth circle by removing all pixels that are outside the circle radius <code>r</code> using <code>discard</code>.
+
+                    </p>
+                    <p>
+                        Your task is to draw a orange circle around the center of the quad with the radius <code>r = 0.8</code>. Additionally, use a smoothing margin for anti-aliasing with a width <code>smoothMargin = 0.01</code>. Implement the following subtasks:
+                        <ul>
+                            <li>
+                                Create a <b>uniform variable</b> <code>vec2 canvasSize</code> and retrieve its location in your JavaScript application.
+                                Note: If you do not use the variable in your shader it might be possible that you cannot retrieve its location.
+                                Pass the canvas size to the shader uniform using <code>gl.uniform2f()</code>.
+                            </li>
+                            <li>
+                                Map the fragment's coordinate <code>gl_FragCoord.xy</code> into the range [-1,1]<sup>2</sup>.
+                                Hint: You can debug using <code>gl_FragColor = vec4(abs(uv), 0.0, 1.0);</code>.
+                            </li>
+                            <li>
+                                Discard all fragments outside the radius <code>r</code>; color all fragments inside with orange.
+                            </li>
+                            <li>
+                                Interpolate the opacity (<code>gl_FragColor.a</code>) for all fragments inside <code>[r - smoothMargin, r]</code>.
+                                You can use the GLSL function <code>clamp()</code></a>.
+                            </li>
+
+                        </ul>
+                    </p>
+
+
+
+
+                </task>
+
+                <!-- ------------------------------------------------------------------------------------------------------------- -->
+                <!-- ------------------------------------------------------------------------------------------------------------- -->
+
+            </exercise>
+        </content>
+    </page>
+
+    <page size="A4">
+        <content>
+            <exercise prefix="Advanced Exercises" title="GPU Rendering using WebGL" points=10>
+
+                <task title="Triangle Clipping / Halfspaces" points=5 submitfile="shader_quadtriangle.fs, shader_quadtriangleiso.fs">
+
+                    <canvas class="floatRight" id="canvasTriangleClipping" width=600 height=300 data-call="Advanced1.webGLStart" data-call-src="./Advanced/Advanced1.js">
+                        <shader id="shader-vs-default" type="--vertex" src="./Advanced/shader_default.vs"></shader>
+                        <shader id="shader-fs-default" type="--fragment" src="./Advanced/shader_default.fs"></shader>
+                        <shader id="shader-fs-quadtriangle" type="--fragment" src="./Advanced/shader_quadtriangle.fs"></shader>
+                        <shader id="shader-fs-quadtriangleiso" type="--fragment" src="./Advanced/shader_quadtriangleiso.fs"></shader>
+                    </canvas>
+                    <subtask title="Triangle Clipping / Halfspaces" points=3 submitfile="shader_quadtriangle.fs">
+                        <p>
+                            In this subtask you are asked to implement a fragment shader that clips every pixel against a triangle that is defined by the uniforms <code>pointA</code>, <code>pointB</code> and <code>pointC</code>.
+                            The given code already renders a full size screen quad. To clip a pixel at the screen coordinates <code>gl_FragCoord</code>, you have to test against the three edges of the triangle.
+                            If the pixel is outside you have to discard the pixel, otherwise you give the pixel the color that is defined by the uniform <code>color</code>.
+                            The result should look like the left triangle in the picture below.
+                        </p>
+                    </subtask>
+
+                    <subtask title="Iso Lines / Signed Distance Functions" points=2 submitfile="shader_quadtriangleiso.fs">
+                        <p>
+                            In this subtask you are asked to adjust the fragment shader of the previous sub task, such that you can render iso lines in the inside of the triangle.
+                            An iso line contains the points that have the same distance to the contour of the triangle.
+                            We want you to draw multiple iso lines, i.e. every iso line whose distance is a multiple of <code>14</code> pixels.
+                            Therefore you first have to compute the distance <code>d</code> of a pixel to the triangle contour.
+                            If the pixel is outside, you discard the pixel, otherwise you compute the distance to the nearest iso line.
+                            If it is in the range of <code>1</code> pixel, you blend between the triangle color and the color of the iso line (black).
+                            The result should look like the right triangle in the picture below.
+                        </p>
+                    </subtask>
+                    <div class="floatRight">
+                        <img src="images/triangle_clipping.png" height="300">
+                    </div>
+
+
+
+                </task>
+
+                <task title="Water Modeling" points="5" submitfile="Advanced2.js, shader_water.vs, shader_water.fs">
+
+                    <p>
+                        In this task, you can use your vertex and pixel processing knowledge to animate a plane consisting of many triangles to let it look (a little) like water.
+                        The image on the right shows an example frame to give you a feeling what your animation should look like in the end.
+                    </p>
+
+                    <div class="floatLeft">
+                        <canvas id="canvasWater" width=400 height=400 data-call="Advanced2.webGLStart" data-call-src="./Advanced/Advanced2.js">
+                            <shader id="shader-vs-water" type="--vertex" src="./Advanced/shader_water.vs"></shader>
+                            <shader id="shader-fs-water" type="--fragment" src="./Advanced/shader_water.fs"></shader>
+                        </canvas>
+                    </div>
+
+                    <p>
+                        <img src="images/water.png" height="200">
+                    </p>
+                    <p>
+                        <img src="images/triangle_grid.png" width="200">
+                    </p>
+
+
+                    <subtask title="Plane Setup" points="3">
+                        <p>
+                            The vertices for a grid consisting of <code>nodes</code> x <code>nodes</code> vertices is already given in file <code>Advanced2.js</code>.
+                            The index buffer setup is still missing.
+                            Right now, six random indices are pushed into the <code>indices</code> array, resulting in two random triangles in the canvas above.
+                            Change the code to connect the vertices with triangles like in the picture above (example for <code>nodes=4</code>)!
+                            When you are done, you should see a blue plane formed by <code>nodes</code> x <code>nodes</code> vertices connected with triangles.
+                        </p>
+
+                    </subtask>
+
+                    <subtask title="Water Animation" points="2">
+                        <p>
+                            Right now, the plane does not look like water at all.
+                            Change both vertex and fragment shader to animate the water surface:
+                            In the vertex shader, where you have control over the single vertices,
+                            change the height of each vertex according to a random sine function.
+                            In the fragment shader, where you have control over the single pixels,
+                            change their color according to their height.
+                        </p>
+                    </subtask>
+                </task>
+
+            </exercise>
+        </content>
+    </page>
+</body>
