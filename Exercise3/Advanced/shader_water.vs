@@ -21,15 +21,9 @@ void main(void)
 	float amplitude = 0.5 * rand(vec2(vVertex.x, vVertex.z));
 	float period = rand(vec2(vVertex.z, vVertex.x));
 
-	// TODO 3.5b)	Replace the following by code to
-	//				alter the vertex position over time.
-	//				Change the y value by a sine function
-	//				offset.
-	//				Each vertex has its own amplitude and 
-	//				period.
-	vec3 p = vVertex;
+  vec3 p = vVertex;
 
-
+  p.y = amplitude * rand(vec2(period, time/5000000.0));
 
 	gl_Position = MVP * vec4(p, 1);
 
