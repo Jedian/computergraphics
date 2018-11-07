@@ -109,21 +109,17 @@ var Advanced2 = function () {
 
         var indices = [];
 
-        // TODO 3.5a)	Fill the index buffer with the
-        //              correct indices to form a plane
-        //              of triangles.
-        //              Look at the setup of the 'vertices'
-        //              array to see which vertex has which
-        //              index in the array!
+        for (var i = 0; i < nodes-1; i++){
+            for(var j = 0; j < nodes-1; j++){
+                indices.push(j+(i*nodes));
+                indices.push(j+(i*nodes)+1);
+                indices.push(j+((i+1)*nodes));
 
-        indices.push(32);
-        indices.push(5981);
-        indices.push(2347);
-
-        indices.push(704);
-        indices.push(3957);
-        indices.push(4927);
-
+                indices.push(j+(i*nodes)+1);
+                indices.push(j+((i+1)*nodes));
+                indices.push(j+((i+1)*nodes)+1);
+            }
+        }
 
         // create vertex buffer on the gpu
         vbo = gl.createBuffer();

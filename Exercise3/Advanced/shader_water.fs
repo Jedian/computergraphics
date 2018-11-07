@@ -17,8 +17,7 @@ void main(void)
 	//				lowest possible height (-0.5) and light blue
 	//				for those at the highest possible height (0.5).
 	//				Use the glsl function mix();
-	gl_FragColor = vec4(0.0, 0.0, 1.0, 1.0);
 
-
+  gl_FragColor = vec4(mix(dark_blue, light_blue, position.y+0.5), 1.0);
 
 }
