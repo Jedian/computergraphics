@@ -22,16 +22,15 @@ void main(void)
 	float dist = abs(x * x) + abs(y * y);
 
 	float rdist = r * r;
-	float rdistMargin  = (r -smoothMargin) * (r -smoothMargin);
+	float rdistMargin = (r - smoothMargin) * (r - smoothMargin);
 
-	if(dist <= rdist && dist >= rdistMargin){
-		float alpha = dist - rdistMargin;
+	if(dist <= rdist){
+		float alpha = clamp(dist, rdistMargin, rdist); //clamp(a,b,c) = min(max(a,b),c)
+		alpha -= rdistMargin;
 		alpha /= smoothMargin;
 
 		gl_FragColor = vec4(1.0, 85.0 / 255.0, 0.0, 1.0 - alpha);
 	}
-	else if (dist < rdist)
-		gl_FragColor = vec4(1.0, 85.0 / 255.0, 0.0, 1.0);
 	else
 		discard;
 }
