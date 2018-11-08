@@ -19,10 +19,9 @@ void main(void)
 	float x = (2.0 * gl_FragCoord.xy[0] / canvasSize[0]) - 1.0;
 	float y = (2.0 * gl_FragCoord.xy[1] / canvasSize[1]) - 1.0;
 
-	float dist = abs(x * x) + abs(y * y);
-
-	float rdist = r * r;
-	float rdistMargin = (r - smoothMargin) * (r - smoothMargin);
+	float dist = sqrt(abs(x * x) + abs(y * y));
+	float rdist = sqrt(r * r);
+	float rdistMargin = sqrt((r - smoothMargin) * (r - smoothMargin));
 
 	if(dist <= rdist){
 		float alpha = clamp(dist, rdistMargin, rdist); //clamp(a,b,c) = min(max(a,b),c)
