@@ -58,8 +58,6 @@ void main(void)
 
     float mind = min(dab, min(dbc, dac));
     float mod = mind - (14.0 * floor(mind/14.0));
-    float aux = mind/14.0;
-    aux -= floor(aux);
     
     // Point is in range of 1 pixel from a iso line, blend it black with yellow
     if(mod <= 1.0)
