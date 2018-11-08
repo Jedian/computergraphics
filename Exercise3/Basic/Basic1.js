@@ -4,25 +4,13 @@ function webGLStart(canvas) {
     if (!gl) alert("Could not initialise WebGL, sorry :-(\nTo enable WebGL support in your browser, go to about:config and skip the warning.\nSearch for webgl.disabled and set its value to false.");
 
     gl.viewport(0, 0, canvas.width, canvas.height);
-
-    //var c = [0.3, 0.2];
-    //var r = 0.7;
-    //var slices = 100;
-
-    var c = [-.2, -.4];
-    var r = .5;
-    var slices = 50;
+    
+    var c = [0.3, 0.2];
+    var r = 0.7;
+    var slices = 100;
 
     var vertices = [];
     var indices = [];
-
-
-    // TODO 3.1)	Replace the following code so that
-    //              the vertices and indices to not describe
-    //              a triangle but a circle around the center
-    //              c with radius r. Use triangles to describe 
-    //              the circle's geometry. The number of
-    //              triangles is stored in the variable slices.
 
     //set center
     vertices.push(c[0]);

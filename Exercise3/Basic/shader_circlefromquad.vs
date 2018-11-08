@@ -1,6 +1,4 @@
- 
 attribute vec2 vVertex;
- 
 
 void main(void)
 {
