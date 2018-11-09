@@ -86,14 +86,38 @@ void CG::update(float dt)
     //				mat4 glm::scale(vec3 v);
     //				mat4 glm::rotate(float angle, vec3 axis);
 
+
     // a) Sun
     sun = mat4(1); // <- Change this line
+    // scale
+    sun = glm::scale(sun, vec3(sunRadius, sunRadius, sunRadius));
+    // tilting
+    sun = glm::rotate(sun, sunObliquity, vec3(0, 1, 0));
+    // rotation
+    sun = glm::rotate(sun, glm::radians(360.f/sunRotationTime)*time, vec3(0, 0, 1)); 
 
     // b) Earth
-    earth = glm::translate(vec3(earthOrbitRadius,0,0)); // <- Change this line
+    // scale
+    earth = glm::scale(vec3(earthRadius, earthRadius, earthRadius));
+    // revolution 
+    earth = glm::rotate(earth, glm::radians(360.f/earthRevolutionTime)*time, vec3(0, 0, 1)); 
+    earth = glm::translate(earth, vec3(2*earthOrbitRadius,0,0));
+    earth = glm::rotate(earth, glm::radians(-360.f/earthRevolutionTime)*time, vec3(0, 0, 1)); 
+    // tilting
+    earth = glm::rotate(earth, earthObliquity, vec3(0, 1, 0));
+    // rotation
+    earth = glm::rotate(earth, glm::radians(360.f/earthRotationTime)*time, vec3(0, 0, 1));  // <- Change this line
 
     // c) Moon
-    moon =  glm::translate(vec3(earthOrbitRadius + moonOrbitRadius,0,0)); // <- Change this line
+    // scale
+    moon = glm::scale(vec3(moonRadius, moonRadius, moonRadius));
+    moon = glm::translate(moon, vec3(earthOrbitRadius + moonOrbitRadius,0,0)); // <- Change this line
+    // revolution
+    moon = glm::rotate(moon, glm::radians(360.f/moonRevolutionTime)*time, vec3(0, 0, 1)); 
+    moon = glm::translate(moon, vec3(2*earthOrbitRadius + moonOrbitRadius,0,0));
+    // tilting
+    moon = glm::rotate(moon, glm::radians(360.f/moonRotationTime)*time, vec3(0, 0, 1)); 
+
 
     // d) Orbit Rings
     earthOrbit = glm::scale(vec3(earthOrbitRadius));
