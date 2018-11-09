@@ -50,9 +50,6 @@ function webGLStart(canvas) {
     var attrVertexPosition = gl.getAttribLocation(shaderProgram, "vVertex");
     gl.enableVertexAttribArray(attrVertexPosition);
     gl.vertexAttribPointer(attrVertexPosition, 2, gl.FLOAT, false, 8, 0);
-
-    // TODO 3.3)	Define a constant variable (uniform) to 
-    //              "send" the canvas size to all fragments.
     
     var attrCanvasSizePosition = gl.getUniformLocation(shaderProgram, "canvasSize");
     gl.uniform2f(attrCanvasSizePosition, canvas.width, canvas.height);
