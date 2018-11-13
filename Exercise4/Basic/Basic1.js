@@ -66,7 +66,7 @@ var Basic1_1 = function () {
         //			    performing a rotation by the angle 
         //			    alpha and replace the following line
         //			    by the appropriate code.
-        return new LinearTransformation([1, 0, 0, 1]);
+        return new LinearTransformation([Math.cos(alpha), -Math.sin(alpha), Math.sin(alpha), Math.cos(alpha)]);
 
     }
 
@@ -77,7 +77,7 @@ var Basic1_1 = function () {
         //			    the scaling factor scale and replace
         //			    the following line by the appropriate 
         //			    code.
-        return new LinearTransformation([1, 0, 0, 1]);
+        return new LinearTransformation([scale, 0, 0, scale]);
 
     }
 
@@ -87,7 +87,7 @@ var Basic1_1 = function () {
         //			    performing a shear along the x axis. 
         //			    Replace the following line by the
         //			    appropriate code.
-        return new LinearTransformation([1, 0, 0, 1]);
+        return new LinearTransformation([1, shearX, 0, 1]);
 
     }
 
@@ -133,7 +133,7 @@ var Basic1_2 = function () {
         // TODO 4.1b)	Implement a linear transformation 
         //			    performing a shear along the x axis. 
         //              Replace the following code.
-        return new LinearTransformation([1, 0, 0, 1]);
+        return new LinearTransformation([1, shearX, 0, 1]);
 
     }
 
@@ -142,7 +142,7 @@ var Basic1_2 = function () {
         // TODO 4.1b)	Implement a linear transformation 
         //			    performing a shear along the y axis. 
         //              Replace the following code.
-        return new LinearTransformation([1, 0, 0, 1]);
+        return new LinearTransformation([1, 0, shearY, 1]);
 
     }
 
@@ -165,7 +165,11 @@ var Basic1_2 = function () {
             //			    of triangle, call shearingX with the 
             //			    corresponding parameters!
             //              Use ApplyLinearTransformation() to transform the corner points.
-            var triangle1 = new Triangle(triangle.a, triangle.b, triangle.c);
+
+            var shearing = ShearingX(-Math.tan(alpha/2));
+            var triangle1 = new Triangle(ApplyLinearTransformation(shearing, triangle.a),
+                                                ApplyLinearTransformation(shearing, triangle.b),
+                                                ApplyLinearTransformation(shearing, triangle.c));
 
             RenderTriangle(context, new Viewport(150, 150, 150, 0), triangle1);
 
@@ -175,7 +179,11 @@ var Basic1_2 = function () {
             //			    of triangle1, call shearingY with the 
             //			    corresponding parameters!
             //              Use ApplyLinearTransformation() to transform the corner points.
-            var triangle2 = new Triangle(triangle1.a, triangle1.b, triangle1.c);
+
+            shearing = ShearingY(Math.sin(alpha));
+            var triangle2 = new Triangle(ApplyLinearTransformation(shearing, triangle1.a),
+                                                ApplyLinearTransformation(shearing, triangle1.b),
+                                                ApplyLinearTransformation(shearing, triangle1.c));
 
             RenderTriangle(context, new Viewport(150, 150, 300, 0), triangle2);
 
@@ -185,8 +193,11 @@ var Basic1_2 = function () {
             //			    of triangle2, call shearingX with the 
             //			    corresponding parameters!
             //              Use ApplyLinearTransformation() to transform the corner points.
-            var triangle3 = new Triangle(triangle2.a, triangle2.b, triangle2.c);
 
+            shearing = ShearingX(-Math.tan(alpha/2));
+            var triangle3 = new Triangle(ApplyLinearTransformation(shearing, triangle2.a),
+                                                ApplyLinearTransformation(shearing, triangle2.b),
+                                                ApplyLinearTransformation(shearing, triangle2.c));
 
             RenderTriangle(context, new Viewport(150, 150, 450, 0), triangle3);
         }
@@ -201,7 +212,14 @@ var Basic1_3 = function () {
         //			    of the affine transformation equivalent
         //			    to the composition of affineTransf1 and
         //			    affineTransf2.
-        return new AffineTransformation([1, 0, 0, 1], [0, 0]);
+        return new AffineTransformation(
+            [(affineTransf2.A[0] * affineTransf1.A[0]) + (affineTransf2.A[1] * affineTransf1.A[2]),
+            (affineTransf2.A[0] * affineTransf1.A[1]) + (affineTransf2.A[1] * affineTransf1.A[3]),
+            (affineTransf2.A[2] * affineTransf1.A[0]) + (affineTransf2.A[3] * affineTransf1.A[2]),
+            (affineTransf2.A[2] * affineTransf1.A[1]) + (affineTransf2.A[3] * affineTransf1.A[3])]
+            ,[(affineTransf2.A[0] * affineTransf1.t[0]) + (affineTransf2.A[1] * affineTransf1.t[1]) + affineTransf2.t[0],
+            (affineTransf2.A[2] * affineTransf1.t[0]) + (affineTransf2.A[3] * affineTransf1.t[1]) + affineTransf2.t[1]]
+            );
 
     }
 
@@ -243,7 +261,11 @@ var Basic1_4 = function () {
         // TODO 4.1d) 	Compute the affine transformation that 
         //			    transforms the triangle to the target 
         //			    triangle triangleTarget!
-        return new AffineTransformation([1.0, 0.0, 0.0, 1.0], [0.0, 0.0]);
+        return new AffineTransformation(
+            [triangleTarget.b.x - triangleTarget.a.x, 
+            triangleTarget.c.x - triangleTarget.a.x,
+            triangleTarget.b.y - triangleTarget.a.y,
+            triangleTarget.c.y - triangleTarget.a.y], [triangleTarget.a.x, triangleTarget.a.y]);
 
     }
 
