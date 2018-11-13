@@ -95,8 +95,16 @@ var Basic2 = function () {
         // TODO 4.2     Build up the normal transformation corresponding 
         //              to the linear transformation stored in linearTransf. 
         //              Replace the following dummy line.
-        return new LinearTransformation(
-            [1, 0,0,1]);
+        var Aa = linearTransf.A[0];
+        var Ab = linearTransf.A[1];
+        var Ac = linearTransf.A[2];
+        var Ad = linearTransf.A[3];
+        var idet= 1/((Aa*Ad) - (Ab*Ac));
+        var invA = [idet*linearTransf.A[3], -idet*linearTransf.A[1],
+                        -idet*linearTransf.A[2], idet*linearTransf.A[0]];
+        normalTransf = new LinearTransformation([invA[0], invA[2], invA[1], invA[3]]);
+        console.log(normalTransf);
+        return normalTransf;
 
     }
 
