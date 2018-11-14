@@ -80,15 +80,8 @@ void CG::update(float dt)
     if(!ImGui::GetIO().WantCaptureMouse)
         camera.update(dt);
 
-
-    // TODO 4.4		Use the following methods to create 4x4 transformation matrices:
-    //				mat4 glm::translate(vec3 v);
-    //				mat4 glm::scale(vec3 v);
-    //				mat4 glm::rotate(float angle, vec3 axis);
-
-
     // a) Sun
-    sun = mat4(1); // <- Change this line
+    sun = mat4(1);
     // scale
     sun = glm::scale(sun, vec3(sunRadius, sunRadius, sunRadius));
     // tilting
@@ -97,31 +90,34 @@ void CG::update(float dt)
     sun = glm::rotate(sun, glm::radians(360.f/sunRotationTime)*time, vec3(0, 0, 1)); 
 
     // b) Earth
+    float e_theta = glm::radians(360.0f/earthRevolutionTime)*time;
+    float earth_x = earthOrbitRadius*cos(e_theta);
+    float earth_y = earthOrbitRadius*sin(e_theta);
+    // revolution
+    earth = glm::translate(vec3(earth_x, earth_y, 0));
     // scale
-    earth = glm::scale(vec3(earthRadius, earthRadius, earthRadius));
-    // revolution 
-    earth = glm::rotate(earth, glm::radians(360.f/earthRevolutionTime)*time, vec3(0, 0, 1)); 
-    earth = glm::translate(earth, vec3(2*earthOrbitRadius,0,0));
-    earth = glm::rotate(earth, glm::radians(-360.f/earthRevolutionTime)*time, vec3(0, 0, 1)); 
+    earth = glm::scale(earth, vec3(earthRadius, earthRadius, earthRadius));
     // tilting
-    earth = glm::rotate(earth, earthObliquity, vec3(0, 1, 0));
+    earth = glm::rotate(earth, earthObliquity, vec3(1, 0, 0));
     // rotation
-    earth = glm::rotate(earth, glm::radians(360.f/earthRotationTime)*time, vec3(0, 0, 1));  // <- Change this line
+    earth = glm::rotate(earth, glm::radians(360.f/earthRotationTime)*time, vec3(0, 0, 1));
 
     // c) Moon
+    float m_theta = glm::radians(360.0f/moonRevolutionTime)*time;
+    float moon_x = moonOrbitRadius*cos(m_theta);
+    float moon_y = moonOrbitRadius*sin(m_theta);
+    //revolution
+    moon = glm::translate(vec3(earth_x + moon_x, earth_y + moon_y, 0));
     // scale
-    moon = glm::scale(vec3(moonRadius, moonRadius, moonRadius));
-    moon = glm::translate(moon, vec3(earthOrbitRadius + moonOrbitRadius,0,0)); // <- Change this line
-    // revolution
-    moon = glm::rotate(moon, glm::radians(360.f/moonRevolutionTime)*time, vec3(0, 0, 1)); 
-    moon = glm::translate(moon, vec3(2*earthOrbitRadius + moonOrbitRadius,0,0));
+    moon = glm::scale(moon, vec3(moonRadius, moonRadius, moonRadius));
     // tilting
     moon = glm::rotate(moon, glm::radians(360.f/moonRotationTime)*time, vec3(0, 0, 1)); 
 
 
     // d) Orbit Rings
     earthOrbit = glm::scale(vec3(earthOrbitRadius));
-    moonOrbit = glm::translate(vec3(earthOrbitRadius + moonOrbitRadius,0,0)); // <- Change this line
+    moonOrbit = glm::translate(vec3(earth_x, earth_y, 0));
+		moonOrbit = glm::rotate(moonOrbit, moonOrbitalInclination, vec3(1, 0, 0));
 
 }
 
