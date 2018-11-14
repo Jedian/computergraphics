@@ -92,9 +92,6 @@ var Basic2 = function () {
 
     function BuildNormalTransformation(linearTransf) {
 
-        // TODO 4.2     Build up the normal transformation corresponding 
-        //              to the linear transformation stored in linearTransf. 
-        //              Replace the following dummy line.
         var Aa = linearTransf.A[0];
         var Ab = linearTransf.A[1];
         var Ac = linearTransf.A[2];
@@ -171,15 +168,6 @@ var Basic2 = function () {
             var normalCD_correct = ApplyLinearTransformation(shearingNormals, normalCD);
             var normalDA_correct = ApplyLinearTransformation(shearingNormals, normalDA);
 
-            console.log(normalAB);
-            console.log(normalBC);
-            console.log(normalCD);
-            console.log(normalDA);
-
-            console.log(normalAB_correct);
-            console.log(normalBC_correct);
-            console.log(normalCD_correct);
-            console.log(normalDA_correct);
             RenderNormal(context, viewport, normalAB_correct, ApplyLinearTransformation(shearing, rectangle.a), ApplyLinearTransformation(shearing, rectangle.b));
             RenderNormal(context, viewport, normalBC_correct, ApplyLinearTransformation(shearing, rectangle.b), ApplyLinearTransformation(shearing, rectangle.c));
             RenderNormal(context, viewport, normalCD_correct, ApplyLinearTransformation(shearing, rectangle.c), ApplyLinearTransformation(shearing, rectangle.d));

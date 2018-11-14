@@ -62,31 +62,18 @@ var Basic1_1 = function () {
 
     function Rotation(alpha) {
 
-        // TODO 4.1a)	Implement a linear transformation 
-        //			    performing a rotation by the angle 
-        //			    alpha and replace the following line
-        //			    by the appropriate code.
         return new LinearTransformation([Math.cos(alpha), -Math.sin(alpha), Math.sin(alpha), Math.cos(alpha)]);
 
     }
 
     function Scaling(scale) {
 
-        // TODO 4.1a)	Implement a linear transformation 
-        //			    performing an isotropic scaling by 
-        //			    the scaling factor scale and replace
-        //			    the following line by the appropriate 
-        //			    code.
         return new LinearTransformation([scale, 0, 0, scale]);
 
     }
 
     function ShearingX(shearX) {
 
-        // TODO 4.1a)	Implement a linear transformation 
-        //			    performing a shear along the x axis. 
-        //			    Replace the following line by the
-        //			    appropriate code.
         return new LinearTransformation([1, shearX, 0, 1]);
 
     }
@@ -130,18 +117,12 @@ var Basic1_2 = function () {
 
     function ShearingX(shearX) {
 
-        // TODO 4.1b)	Implement a linear transformation 
-        //			    performing a shear along the x axis. 
-        //              Replace the following code.
         return new LinearTransformation([1, shearX, 0, 1]);
 
     }
 
     function ShearingY(shearY) {
 
-        // TODO 4.1b)	Implement a linear transformation 
-        //			    performing a shear along the y axis. 
-        //              Replace the following code.
         return new LinearTransformation([1, 0, shearY, 1]);
 
     }
@@ -161,11 +142,6 @@ var Basic1_2 = function () {
 
             context.fillText("1. shearing", 225, 140);
 
-            // TODO 4.1b)	Instead of just copying the corner points
-            //			    of triangle, call shearingX with the 
-            //			    corresponding parameters!
-            //              Use ApplyLinearTransformation() to transform the corner points.
-
             var shearing = ShearingX(-Math.tan(alpha/2));
             var triangle1 = new Triangle(ApplyLinearTransformation(shearing, triangle.a),
                                                 ApplyLinearTransformation(shearing, triangle.b),
@@ -175,11 +151,6 @@ var Basic1_2 = function () {
 
             context.fillText("2. shearing", 375, 140);
 
-            // TODO 4.1b)	Instead of just copying the corner points
-            //			    of triangle1, call shearingY with the 
-            //			    corresponding parameters!
-            //              Use ApplyLinearTransformation() to transform the corner points.
-
             shearing = ShearingY(Math.sin(alpha));
             var triangle2 = new Triangle(ApplyLinearTransformation(shearing, triangle1.a),
                                                 ApplyLinearTransformation(shearing, triangle1.b),
@@ -188,11 +159,6 @@ var Basic1_2 = function () {
             RenderTriangle(context, new Viewport(150, 150, 300, 0), triangle2);
 
             context.fillText("3. shearing", 525, 140);
-
-            // TODO 4.1b)	Instead of just copying the corner points
-            //			    of triangle2, call shearingX with the 
-            //			    corresponding parameters!
-            //              Use ApplyLinearTransformation() to transform the corner points.
 
             shearing = ShearingX(-Math.tan(alpha/2));
             var triangle3 = new Triangle(ApplyLinearTransformation(shearing, triangle2.a),
@@ -208,10 +174,6 @@ var Basic1_3 = function () {
 
     function CompositeAffineTransformations(affineTransf2, affineTransf1) {
 
-        // TODO 4.1c)	Replace the following line by creation
-        //			    of the affine transformation equivalent
-        //			    to the composition of affineTransf1 and
-        //			    affineTransf2.
         return new AffineTransformation(
             [(affineTransf2.A[0] * affineTransf1.A[0]) + (affineTransf2.A[1] * affineTransf1.A[2]),
             (affineTransf2.A[0] * affineTransf1.A[1]) + (affineTransf2.A[1] * affineTransf1.A[3]),
@@ -256,11 +218,6 @@ var Basic1_3 = function () {
 var Basic1_4 = function () {
     function ComputeMapping(triangleTarget) {
 
-        // Note: The original triangle has the fixed vertices (0, 0), (1, 0) and (0, 1).
-
-        // TODO 4.1d) 	Compute the affine transformation that 
-        //			    transforms the triangle to the target 
-        //			    triangle triangleTarget!
         return new AffineTransformation(
             [triangleTarget.b.x - triangleTarget.a.x, 
             triangleTarget.c.x - triangleTarget.a.x,
