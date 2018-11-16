@@ -1,0 +1,260 @@
+﻿
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="./resources/css/print.css">
+
+    <meta name="lecture" content="Computer Graphics">
+    <meta name="exerciseNr" content="5">
+    <meta name="exercisePrefix" content="Exercise">
+    <meta name="term" content="Winter Term 2018/2019">
+    <meta name="dueDate" content="November 23, 2018, 11:59 am">
+
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+    </script>
+
+    <script type="text/javascript" async
+            src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+    </script>
+
+    <script type="text/javascript" src="./resources/js/sheet.js"></script>
+
+    <script type="text/javascript" src="./Basic/gl-matrix.js"></script>
+</head>
+
+
+<body>
+
+    <page size="A4">
+        <content>
+
+            <exercise prefix="Basic Exercises" title="Projections" points=10>
+                <task title="Projections in 2D" points=7 submitfile="Basic1.js">
+
+                    <subtask title="Orthogonal Projection" points="1">
+                        <p>
+                            In this subtask you are asked to implement an orthogonal projection in 2D.
+                            Assume that the camera is aligned with the global coordinate system.
+                            The projection maps the 2D geometry onto a 1D line (the "image plane").
+                            You have to implement <code>Basic1_1.OrthogonalProjection2D(point2D)</code>.
+                            As an argument, it gets a 2D point that has to be projected onto the image plane. The function returns the 1D coordinate on the image plane.
+                        </p>
+                        <canvas class="floatLeft" id="canvasBasic_1_1" width=600 height=300 data-call="Basic1_1.start" data-call-src="./Basic/Basic1.js">
+                            <img class="wait">
+                        </canvas>
+                    </subtask>
+
+                    <subtask title="Perspective Projection" points="2">
+                        <p>
+                            In this subtask you are asked to implement a perspective projection in 2D.
+                            Assume that the camera is aligned with the global coordinate system.
+                            The projection maps the 2D geometry onto a 1D line (the image plane).
+                            You have to implement <code>Basic1_2.PerspectiveProjection2D(eye, imagePlane, point2D)</code>.
+                            In contrast to the previous assignment it also gets the position of the eye and the z component of the image plane.
+                            Before projecting the point, you have to transform the point into camera space (origin is the eye position, axes are aligned to the world coordinate system).
+                            The function returns the 1D coordinate on the image plane.
+                        </p>
+                        <canvas class="floatLeft" id="canvasBasic_1_2" width=600 height=300 data-call="Basic1_2.start" data-call-src="./Basic/Basic1.js">
+                            <img class="wait">
+                        </canvas>
+                    </subtask>
+
+                    <subtask title="Perspective Projection in Homogeneous Coordinates" points="4">
+                        <p>
+                            From the previous assignment you know how a perspective projection works.
+                            As you know from the lecture, a perspective projection can be easily applied using homogeneous coordinates.
+                        </p>
+                        <p>
+                            In this subtask we have a freely movable camera.
+                            You can use the left mouse button to set a new camera center (eye).
+                            Using CTRL + mouse button you can change the point the camera looks at.
+                            Your task is to implement the required methods to set up the camera matrix, the inverse camera matrix and the perspective transformation matrix
+                            (have a look at the <code>TODO</code>s in <code>Camera.prototype.update</code> and <code>mat3.perspective</code>).
+                            The camera matrix transforms a point from world space to camera space.
+                            The inverse camera matrix transforms a point from camera space to world space.
+                            Finally, you have to project a point given in world space coordinates to the canonical volume.
+                            Therefore, you have to implement the function <code>Camera.prototype.projectPoint</code>.
+                        </p>
+                        <canvas class="floatLeft" id="canvasBasic_1_3" width=600 height=300 data-call="Basic1_3.start" data-call-src="./Basic/Basic1.js">
+                            <img class="wait">
+                        </canvas>
+                    </subtask>
+
+                </task>
+
+                <task title="Projections in 3D" points=3 submitfile="Basic2.js">
+                    <p>
+                        In this task, you are asked to implement the 2D projection concept from the last task in 3D and set up a camera which projects the 3D space
+                        into 2D. The canvas below is split: On the left side, you can see the projection result, i.e. the image seen from the camera. On the right
+                        side, there is a debug view showing you both the observed scene (a colored cube in the middle of the coordinate system) and the frustum
+                        belonging to the camera.
+                    </p>
+                    <p>
+                        <center>
+                            <canvas id="canvasProjection3D" width=600 height=300 data-call="Basic2.webGLStart" data-call-src="./Basic/Basic2.js">
+                                <img class="wait">
+                                <shader id="shader-vs-cube" type="--vertex" src="./Basic/shader_cube.vs"></shader>
+                                <shader id="shader-fs-cube" type="--fragment" src="./Basic/shader_cube.fs"></shader>
+                                <shader id="shader-vs-line" type="--vertex" src="./Basic/shader_line.vs"></shader>
+                                <shader id="shader-fs-line" type="--fragment" src="./Basic/shader_line.fs"></shader>
+                            </canvas>
+                        </center>
+                    </p>
+                    <p>
+                        <center>
+                            Field of View: <input type="range" id="slider_fovy" min="10" max="50" step="1" value="30" onchange="Basic2.onChangeFovySlider(this.value);" />
+                        </center>
+                    </p>
+                    <p>
+                        The functions to be implemented are <code>Camera3D.prototype.update</code> and <code>mat4.perspective</code>, analogously to the two functions in
+                        5.1c). Find the appropriate <code>TODO</code>s in the code and add code for the creation of the two matrices needed: First, set up the camera matrix in
+                        <code>Camera3D.prototype.update</code>. Once you have completed this, you should see the camera frustum in the debug view on the right side.
+                        The debug frustum is colored similarly to the cube in order to allow for better three-dimensional interpretation.
+                        Second, set up the projection matrix in <code>mat4.perspective</code>. Once this matrix is correct, you should see the camera output in the view on the left side.
+                    </p>
+                    <p>
+                        As soon as you have finished the creation of the two matrices, you can enable interaction with the camera through setting <code>enableInteraction</code> to <code>true</code>.
+                        You can move the camera within bounds, using the keys W (move camera forwards), S (move camera backwards), A (turn camera to the left) and D (turn camera to
+                        the right). The camera is always oriented towards the origin and therefore towards the cube. The opening angle of the camera can be adjusted using the slider below the canvas.
+                        The debug camera remains static during all of these changes so you can observe the effects on the camera frustum.
+                    </p>
+                </task>
+
+            </exercise>
+        </content>
+    </page>
+
+    <page size="A4">
+        <content>
+
+            <exercise prefix="Advanced Exercises" title="Projections and Blending" points=10>
+                <task title="Planar Shadows and Particles" points="10" submitfile="cg.cpp, projection.glsl">
+                    <p>
+                        In this exercise, your task is to implement planar shadows for opaque geometry (teapot) and semi-transparent particles (smoke).
+                        The basic algorithm for the scene seen below is:
+                    </p>
+                    <ol>
+                        <li>Render teapot and plane </li>
+                        <li>Render the projection of the teapot onto the plane in black </li>
+                        <li>Render the projection of the particles onto the plane in black</li>
+                        <li>Render particles</li>
+                    </ol>
+                    <p>
+                        Note that the particles are rendered <b>after</b> their shadows. 
+                        This is required because the particles are blended on top of the current image without writing to the depth buffer. 
+                        If we would switch it around the shadows would appear to be in front of the particles when looking from a certain angle. 
+                        You can test this yourself after implementing this exercise by switching the draw order.
+                    </p>
+                    <p>
+                        Subtasks a) and b) focus on planar shadow generation through vertex projection. 
+                        The general idea is to render an object twice, once with the original color and vertex positions, and once in black with all vertices projected onto the ground plane.
+                    </p>
+                    <p>
+                        Subtasks c) to g) address the creation of a simple particle system for steam rendering. 
+                        The steam particles are quads which are always oriented to the camera (billboards) and display an animated noise function. 
+                        The particles are rendered with alpha blending. 
+                        The shadows of the particles are created like the teapot shadows by projecting the billboards onto the ground plane.
+                    </p>
+                    <img class="floatRight" src="images/cg5.png" width=620>
+
+                    <subtask title="Vertex Projection" points="2">
+                        <p>
+                            In the first subtask you have to implement the shadow of the teapot. 
+                            Right now you cannot see shadows when you check the corresponding checkbox in the GUI:
+                            The teapot is already rendered a second time in black with projected vertices,
+                            but so far, the projection in the method <code>projectVertexToPlane</code> of <code> projection.glsl</code> projects each vertex to the origin.
+                            Change the method in order to project each vertex of the teapot mesh onto the ground plane according to the light direction. 
+                            The parameters for <code>projectVertexToPlane</code> are the vertex in world space, the light direction, and two parameters describing the plane pose in world space.
+                        </p>
+                    </subtask>
+
+                    <subtask title="Z-fighting" points="1">
+                        <p>
+                            Once you have implemented the vertex projection correctly, you will see z-fighting of the shadow and the ground plane: 
+                            As they are both rendered at the same positions, either of them "wins" for each pixel due to floating-point imprecision in the depth values.
+                            We could solve that by translating the shadow a constant distance of $\epsilon$ along the normal, 
+                            but the non-linearity in the depth buffer would either produce a "floating" shadow or not remove z-fighting at all, depending on the view distance. 
+                            That is why you should remove z-fighting with <a href="https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glPolygonOffset.xhtml">glPolygonOffset</a> in <code>CG::renderOpaqueGeometryShadows</code>.
+                        </p>
+                    </subtask>
+
+                    <subtask title="Particle Orientation" points="1">
+                        <p>
+                            When you enable the particles right now they are rendered statically in the x-z plane. 
+                            We want to transform them so that they are always oriented towards the camera. 
+                            We achieve this in the following two steps:
+                            <ul>
+                                <li> Rotate them into the x-y plane. </li>
+                                <li> Apply the inverse rotational part of the view matrix. </li>
+                            </ul>
+                        </p>
+                        <p>
+                            The reason why this works is the following: When projecting the particles to view space (i.e. multiplying with the view matrix), 
+                            the rotational part is cancelled out and the particle is still in the x-y plane in view space. 
+                            The implemenation has to be done in <code> CG::renderParticles</code>.
+                        </p>
+                    </subtask>
+
+                    <subtask title="Particle Simulation" points="2">
+                        <p>
+                            In this subtask, particles are animated and resetted after a certain time span to create a continuous steam flow. 
+                            The implementation for this animation has to be done in <code>CG::update</code>. 
+                            First, have a look at <code> struct Particle</code> in <code>cg.h</code>. 
+                            In each timestep, the state of each particle has to be updated. 
+                            The positions of the particles are updated with explicit euler integration:
+                            \[ p_{n+1} = p_{n} + v \Delta t \]
+                            Once a particle is dead (<code>lifetime</code> < 0) it should be reset with the following properties:
+                        </p>
+                        <ul>
+                            <li> Reset <code>position</code> to <code>particleStart</code>. </li>
+                            <li> Set <code>lifetime</code> to a random value. </li>
+                            <li> Set <code>timeoffset</code> to a random value. </li>
+                            <li> Set <code>velocity</code> to a random multiple of <code>planeNormal</code>.
+                            Before multiplying with a constant, offset it by adding a small random vector to create a 'cone like' emission behaviour. </li>
+                        </ul>
+                        <p>
+                            The random values should be chosen in a way that the steam looks 'cool' and similar to the image above.
+                        </p>
+                    </subtask>
+
+                    <subtask title="Particle Blending" points="1">
+                        <p>
+                            At this point, the particles are still rendered as white squares. 
+                            The alpha value is already set in the fragment shader by a noise function, but it is not used while rendering. 
+                            Enable blending and set the correct blend function in <code>CG::renderParticles</code>. 
+                            The following blending behaviour should be met:
+                            \[ C_{dst} = \alpha_{src} C_{src} + (1-\alpha_{src}) C_{dst} \]
+                            with $\alpha_{src}$ being the alpha value of the particle, $C_{src}$ the particle RGB color, and $C_{dst}$ the current framebuffer color. This behaviour is implentend in OpenGL by using <a href="https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glBlendFunc.xhtml">glBlendFunc</a> with the arguments <code>GL_SRC_ALPHA</code> and <code>GL_ONE_MINUS_SRC_ALPHA</code>.
+                        </p>
+                    </subtask>
+                    <subtask title="Particle Shadow Orientation" points="2">
+                        <p>
+                            The particles are rendered as billboards which are oriented to the camera. 
+                            If we projected these billboards directly onto the plane, the shadows would change with viewing direction. 
+                            A better approach is to orient the particles <b>towards the light</b> in the shadow pass. 
+                            This can be achieved by creating an <a href="https://en.wikipedia.org/wiki/Orthonormal_basis">orthonormal basis</a> from the light direction. 
+                            Implement <code>mat3 orthonormalBasis(vec3 dir)</code> in <code>cg.cpp</code>. 
+                            The orthonormal basis should be returned as a 3x3 matrix, with each column being one basis vector. 
+                            The third column <code>v[2]</code> should be the negative light direction.
+                        </p>
+                    </subtask>
+
+                    <subtask title="Particle Shadows" points="1">
+
+                        <p>
+                            The projected shadows of the particles will produce z-fighting and are rendered without alpha blending. 
+                            Add a polygon offset to the particle shadows and render them with alpha blending similar to the previous tasks. 
+                            Your implemention has to be done in <code>CG::renderParticleShadows()</code>.
+                        </p>
+                    </subtask>
+
+
+                </task>
+
+            </exercise>
+        </content>
+    </page>
+</body>
