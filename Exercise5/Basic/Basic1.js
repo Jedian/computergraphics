@@ -21,7 +21,8 @@ var Basic1_1 = function () {
         //              is the x component and point2D[1] is the z 
         //              component (Hint: have a look at the bottom left 
         //              of the output image, there you will see the x-z axis).
-        return 0.0;
+
+        return point2D[0];
 
     }
 
@@ -98,8 +99,13 @@ var Basic1_2 = function () {
         //              everything to camera space. The variable 'imagePlane'
         //              gives you the z value of the image plane (You also have 
         //              to transform it to camera space coordinates.).
-        return 0.0;
 
+        var xc = point2D[0] - eye[0];
+        var zc = point2D[1] - eye[1];
+
+        console.log(eye)
+
+        return xc * ((imagePlane-eye[1])/zc);
     }
 
     return {
@@ -177,16 +183,16 @@ mat3.perspective = function (out, fovy, near, far) {
     //              (as in the lecture), i.e. the camera looks 
     //              into the negative view direction.
 
-    out[0] = 0;
+    out[0] = 1;
     out[1] = 0;
     out[2] = 0;
 
     out[3] = 0;
-    out[4] = 0;
-    out[5] = 0;
+    out[4] = ((far + near) / (far-near));
+    out[5] = (-((2*far*near) / (far-near)));
 
     out[6] = 0;
-    out[7] = 0;
+    out[7] = 1;
     out[8] = 0;
 
     return out;
@@ -236,10 +242,35 @@ Camera.prototype.update = function () {
     //              The cameraMatrixInverse transforms from camera space to world space.
     //              You can use gl-matrix.js where necessary.
 
+    this.cameraMatrix[0] = 1;
+    this.cameraMatrix[1] = 0;
+    this.cameraMatrix[2] = -this.eye[0];
+
+    this.cameraMatrix[3] = 0;
+    this.cameraMatrix[4] = 1;
+    this.cameraMatrix[5] = -this.eye[1];
+
+    this.cameraMatrix[6] = 0;
+    this.cameraMatrix[7] = 0;
+    this.cameraMatrix[8] = 1;
+
+    this.cameraMatrixInverse[0] = 1;
+    this.cameraMatrixInverse[1] = 0;
+    this.cameraMatrixInverse[2] = this.eye[0];
+
+    this.cameraMatrixInverse[3] = 0;
+    this.cameraMatrixInverse[4] = 1;
+    this.cameraMatrixInverse[5] = this.eye[1];
+
+    this.cameraMatrixInverse[6] = 0;
+    this.cameraMatrixInverse[7] = 0;
+    this.cameraMatrixInverse[8] = 1;
+
 
     // TODO 5.1c)   Set up the projection matrix using mat3.perspective(...), 
     //              which has to be implemented!
 
+    mat3.perspective(this.projectionMatrix, this.fovy, this.near, this.far);
 
 };
 
@@ -253,7 +284,30 @@ Camera.prototype.projectPoint = function (point2D) {
     //              Don't forget to dehomogenize the projected point 
     //              before returning it! You can use gl-matrix.js where
     //              necessary.
-    return [0.0, 0.0];
+
+    var out = mat3.create();
+    var point = mat3.create();
+        point[0] = point2D[0];
+        point[3] = point2D[1];
+        point[4] = 0;
+        point[6] = 1;
+        point[8] = 0;
+
+    console.log(point)    
+    mat3.mul(out,point, this.cameraMatrix);
+    console.log(out) 
+    var out2 = mat3.create();
+    mat3.mul(out2, out, this.projectionMatrix);
+    console.log(out2) 
+
+    console.log([out2[0], out2[3]])
+
+    var xc = point2D[0] - this.eye[0];
+    var zc = point2D[1] - this.eye[1];
+
+    return [xc * (this.lookAtPoint[0]/zc), zc * (this.lookAtPoint[3]/xc)]
+
+    return [out2[0], out2[3]];
 
 }
 
