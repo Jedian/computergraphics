@@ -107,6 +107,7 @@ void CG::update(float dt)
     dt *= timeScale;
     time += dt;
 
+    
 
     for(Particle& p : particles)
     {
@@ -114,10 +115,9 @@ void CG::update(float dt)
         p.position = p.position + p.velocity*dt;
         if(p.lifeTime < 0){
             p.position = particleStart;
-            p.lifeTime = glm::linearRand(dt*100.f, dt*300.f);
-            p.timeOffset = glm::linearRand(0.f, dt*3.f);
-            printf("%lf %lf %lf\n", planeNormal.x, planeNormal.y, planeNormal.z);
-            p.velocity = glm::linearRand(.5f, 2.0f)*(planeNormal + glm::linearRand(vec3(-2.5f, 10, -2.5f), vec3(2.5f, 10, 2.5f)));
+            p.timeOffset = glm::linearRand(10000.f, 30000.f);
+            p.velocity = glm::linearRand(.0f, .6f)*(planeNormal + glm::linearRand(vec3(-1.25f, 3.f, -0.75f), vec3(0.f, 3.f, 0.75f)));
+            p.lifeTime = glm::linearRand(3.f, 8.f);
         }
 
     }
@@ -197,11 +197,7 @@ static mat3 orthonormalBasis(vec3 dir)
 {
     mat3 v = mat3();
 
-	// TODO: 5.3 f)
-	// Create an orthonormal basis from the unit vector "dir" and store it in "v".
-	// The last column (v[2]) should be the negative "dir".
-	// Use cross products to obtain the other two vectors. <--- ?
-    vec3 u = vec3(0, -dir.z, dir.y); //vector on the plane whose normal is dir
+    vec3 u = vec3(0, -dir.z, dir.y);
     vec3 w = cross(dir, u);
     u = u/length(u);
     w = w/length(w);
