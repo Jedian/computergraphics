@@ -115,8 +115,8 @@ void CG::update(float dt)
         p.position = p.position + p.velocity*dt;
         if(p.lifeTime < 0){
             p.position = particleStart;
-            p.timeOffset = glm::linearRand(10000.f, 30000.f);
-            p.velocity = glm::linearRand(.0f, .6f)*(planeNormal + glm::linearRand(vec3(-1.25f, 3.f, -0.75f), vec3(0.f, 3.f, 0.75f)));
+            p.timeOffset = glm::linearRand(10.f, 30.f);
+            p.velocity = glm::linearRand(.0f, .3f)*(planeNormal + glm::linearRand(vec3(-1.25f, 3.f, -0.75f), vec3(0.f, 3.f, 0.75f)));
             p.lifeTime = glm::linearRand(3.f, 8.f);
         }
 
