@@ -102,9 +102,7 @@ var Basic1_2 = function () {
 
         var xc = point2D[0] - eye[0];
         var zc = point2D[1] - eye[1];
-
-        console.log(eye)
-
+        
         return xc * ((imagePlane-eye[1])/zc);
     }
 
@@ -183,16 +181,18 @@ mat3.perspective = function (out, fovy, near, far) {
     //              (as in the lecture), i.e. the camera looks 
     //              into the negative view direction.
 
-    out[0] = 1;
+    var lr = near * Math.tan(fovy / 2);
+
+    out[0] = (2 * near) / ( 2 * lr);
     out[1] = 0;
     out[2] = 0;
 
     out[3] = 0;
-    out[4] = ((far + near) / (far-near));
-    out[5] = (-((2*far*near) / (far-near)));
+    out[4] = -((far + near) / (far-near));
+    out[5] = -((2*far*near) / (far-near));
 
     out[6] = 0;
-    out[7] = 1;
+    out[7] = -1;
     out[8] = 0;
 
     return out;
@@ -242,28 +242,28 @@ Camera.prototype.update = function () {
     //              The cameraMatrixInverse transforms from camera space to world space.
     //              You can use gl-matrix.js where necessary.
 
-    this.cameraMatrix[0] = 1;
+    this.cameraMatrix[0] = -1;
     this.cameraMatrix[1] = 0;
-    this.cameraMatrix[2] = -this.eye[0];
+    this.cameraMatrix[2] = this.eye[0];
 
     this.cameraMatrix[3] = 0;
-    this.cameraMatrix[4] = 1;
+    this.cameraMatrix[4] = -1;
     this.cameraMatrix[5] = -this.eye[1];
 
     this.cameraMatrix[6] = 0;
     this.cameraMatrix[7] = 0;
     this.cameraMatrix[8] = 1;
 
-    this.cameraMatrixInverse[0] = 1;
+    this.cameraMatrixInverse[0] = -1;
     this.cameraMatrixInverse[1] = 0;
     this.cameraMatrixInverse[2] = this.eye[0];
 
     this.cameraMatrixInverse[3] = 0;
-    this.cameraMatrixInverse[4] = 1;
-    this.cameraMatrixInverse[5] = this.eye[1];
+    this.cameraMatrixInverse[4] = -1;
+    this.cameraMatrixInverse[5] = -this.eye[1];
 
-    this.cameraMatrixInverse[6] = 0;
-    this.cameraMatrixInverse[7] = 0;
+    this.cameraMatrixInverse[6] = this.eye[0];
+    this.cameraMatrixInverse[7] = this.eye[1];
     this.cameraMatrixInverse[8] = 1;
 
 
@@ -293,21 +293,15 @@ Camera.prototype.projectPoint = function (point2D) {
         point[6] = 1;
         point[8] = 0;
 
-    console.log(point)    
     mat3.mul(out,point, this.cameraMatrix);
-    console.log(out) 
     var out2 = mat3.create();
     mat3.mul(out2, out, this.projectionMatrix);
-    console.log(out2) 
 
-    console.log([out2[0], out2[3]])
+    var test = mat3.create();
 
-    var xc = point2D[0] - this.eye[0];
-    var zc = point2D[1] - this.eye[1];
-
-    return [xc * (this.lookAtPoint[0]/zc), zc * (this.lookAtPoint[3]/xc)]
-
-    return [out2[0], out2[3]];
+    mat3.mul(test,out,this.cameraMatrixInverse);
+    
+    return [(out2[0]/out2[6]), (out2[3]/out2[6]) - 1];
 
 }
 
