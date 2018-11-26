@@ -13,10 +13,13 @@ uniform mat4 normalMatrix;
 //				pass the normal to the fragment
 //				shader.
 
+varying vec4 varyNormal;
+
 // TODO 6.2a)	Define a varying variable to
 //				pass the world position to the
 //				fragment shader.
 
+varying vec4 varyWorldPos;
 
 void main(void)
 {
@@ -30,12 +33,18 @@ void main(void)
 	//				matrix. Do not forget to normalize the normal
 	//				afterwards.
 
+	varyNormal = normalize(modelMatrix * vec4(vNormal, 1));
+
 	// TODO 6.2a)	Assign the position to the varying variable. 
 	//				Before you do so, transform it from model
 	//				space to world space. Use the appropriate
 	//				matrix. Do not forget to dehomogenize it 
 	//				afterwards.
 
-
+	varyWorldPos = modelMatrix * vec4(vVertex, 1);
+	varyWorldPos.x = varyWorldPos.x / varyWorldPos.w;
+	varyWorldPos.y = varyWorldPos.y / varyWorldPos.w;
+	varyWorldPos.z = varyWorldPos.z / varyWorldPos.w;
+	varyWorldPos.w = varyWorldPos.w / varyWorldPos.w;
 
 }
