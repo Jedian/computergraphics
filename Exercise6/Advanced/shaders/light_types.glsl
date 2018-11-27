@@ -78,6 +78,10 @@ vec3 phong(
 {
 
 
+    vec3 color_ambient  = vec3(0);
+	  vec3 color_diffuse  = vec3(0);
+    vec3 color_specular = vec3(0);
+
     //TODO 6.6 a)
     //Compute the diffuse, specular and ambient term of the phong lighting model.
     //Use the following parameters of the light object:
@@ -86,11 +90,18 @@ vec3 phong(
     //  light.specularIntensity
     //  light.shiny
     //  light.ambientIntensity
-	//as well as the other function parameters.
+	  //as well as the other function parameters.
+    
+    color_ambient = surfaceColor*light.ambientIntensity;
 
-    vec3 color_ambient  = vec3(0);
-	vec3 color_diffuse  = vec3(0);
-    vec3 color_specular = vec3(0);
+    float cosnl = dot(n, l);
+    color_diffuse = cosnl * surfaceColor * light.diffuseIntensity;
+
+    vec3 r = 2*(cosnl)*n - l;
+    float cosvr = dot(v, r);
+    float pows = pow(cosvr, light.shiny);
+    color_specular = light.color*light.specularIntensity*pows; // ou surfacecolor?
+
     return color_ambient + color_diffuse + color_specular;
 	
 }
@@ -129,7 +140,9 @@ void main()
     {
         // TODO 6.6 b)
         // Use the uniforms "directionalLight" and "objectColor" to compute "colorDirectional". 
-        colorDirectional = vec3(0); //<- change this line
+        colorDirectional = phong(directionalLight, objectColor, n, normalize(-directionalLight.direction), v);
+        //colorDirectional = vec3(0); //<- change this line
+
 
     }
 
@@ -137,7 +150,14 @@ void main()
     {
         //TODO 6.6 c)
         //Use the uniforms "pointLight" and "objectColor" to compute "colorPoint".
-        colorPoint = vec3(0); //<- change this line
+        Light new = pointLight;
+        float dist = distance(pointLight.position, positionWorldSpace);
+        float att = pointLight.attenuation.x + pointLight.attenuation.y*dist + pointLight.attenuation.z*dist*dist;
+        vec3 l = normalize(pointLight.position - positionWorldSpace);
+        new.diffuseIntensity /= att;
+        new.specularIntensity /= att;
+        new.ambientIntensity /= att;
+        colorPoint = 0.5*phong(new, objectColor, n, l, v); //<- change this line
 
     }
 
@@ -145,7 +165,17 @@ void main()
     {
         //TODO 6.6 d)
         //Use the uniforms "spotLight" and "objectColor" to compute "colorSpot".
-        colorSpot = vec3(0); //<- change this line
+        float angle = acos(dot(positionWorldSpace, spotLight.position));
+        vec3 l = normalize(spotLight.position - positionWorldSpace);
+        float dist = distance(spotLight.position, positionWorldSpace);
+        float att = spotLight.attenuation.x + spotLight.attenuation.y*dist + spotLight.attenuation.z*dist*dist;
+        Light new = spotLight;
+        if(degrees(angle) < spotLight.angle){
+          new.diffuseIntensity /= att;
+          new.specularIntensity /= att;
+          new.ambientIntensity /= att;
+        }
+        colorSpot = phong(new, objectColor, n, l, v);
 
     }
 
