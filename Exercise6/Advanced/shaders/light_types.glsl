@@ -94,15 +94,20 @@ vec3 phong(
     
     color_ambient = surfaceColor*light.ambientIntensity;
 
-    float cosnl = dot(n, l);
-    color_diffuse = cosnl * surfaceColor * light.diffuseIntensity;
+    float cosnl = max(0, dot(n, l));
+    color_diffuse = cosnl * light.color * light.diffuseIntensity;
+    if(dot(n, v) < 0) color_diffuse = vec3(0);
 
     vec3 r = 2*(cosnl)*n - l;
-    float cosvr = dot(v, r);
+    float cosvr = clamp(dot(v, r), 0.0, 1.0);
     float pows = pow(cosvr, light.shiny);
     color_specular = light.color*light.specularIntensity*pows; // ou surfacecolor?
+    //if(color_specular.x > 255 || color_specular.y > 255 || color_specular.z > 255)
+	//return vec3(50, 50, 50);
+	//color_specular = vec3(0, 0, 0);
 
     return color_ambient + color_diffuse + color_specular;
+    //return max(color_ambient + color_diffuse + color_specular, vec3(0, 0, 0));
 	
 }
 
@@ -150,14 +155,10 @@ void main()
     {
         //TODO 6.6 c)
         //Use the uniforms "pointLight" and "objectColor" to compute "colorPoint".
-        Light new = pointLight;
         float dist = distance(pointLight.position, positionWorldSpace);
         float att = pointLight.attenuation.x + pointLight.attenuation.y*dist + pointLight.attenuation.z*dist*dist;
         vec3 l = normalize(pointLight.position - positionWorldSpace);
-        new.diffuseIntensity /= att;
-        new.specularIntensity /= att;
-        new.ambientIntensity /= att;
-        colorPoint = 0.5*phong(new, objectColor, n, l, v); //<- change this line
+        colorPoint = phong(pointLight, objectColor, n, l, v)/att; //<- change this line
 
     }
 
@@ -165,17 +166,15 @@ void main()
     {
         //TODO 6.6 d)
         //Use the uniforms "spotLight" and "objectColor" to compute "colorSpot".
-        float angle = acos(dot(positionWorldSpace, spotLight.position));
+        float angle = acos(dot(normalize(positionWorldSpace - spotLight.position), spotLight.direction));
         vec3 l = normalize(spotLight.position - positionWorldSpace);
         float dist = distance(spotLight.position, positionWorldSpace);
         float att = spotLight.attenuation.x + spotLight.attenuation.y*dist + spotLight.attenuation.z*dist*dist;
         Light new = spotLight;
-        if(degrees(angle) < spotLight.angle){
-          new.diffuseIntensity /= att;
-          new.specularIntensity /= att;
-          new.ambientIntensity /= att;
+        if(angle < spotLight.angle){
+            float rad = spotLight.sharpness*spotLight.angle;
+            colorSpot = phong(spotLight, objectColor, n, -spotLight.direction, v)/att * (1-smoothstep(rad, spotLight.angle, angle));
         }
-        colorSpot = phong(new, objectColor, n, l, v);
 
     }
 
@@ -185,7 +184,24 @@ void main()
     {
         //TODO 6.6 e) 
 		//Quantize the three components to implement cell shading.
-		out_color = colorDirectional + colorSpot + colorPoint; //<- change this line
+		vec3 dir_hsv = rgb2hsv(colorDirectional);
+		vec3 spt_hsv = rgb2hsv(colorSpot);
+		vec3 pnt_hsv = rgb2hsv(colorPoint);
+
+		if(dir_hsv[2] < 0.33) dir_hsv[2] = 0;
+		else if(dir_hsv[2] < 0.66) dir_hsv[2] = 0.5;
+		else dir_hsv[2] = 1;
+
+		if(spt_hsv[2] < 0.33) spt_hsv[2] = 0;
+		else if(spt_hsv[2] < 0.66) spt_hsv[2] = 0.5;
+		else spt_hsv[2] = 1;
+
+		if(pnt_hsv[2] < 0.33) pnt_hsv[2] = 0;
+		else if(pnt_hsv[2] < 0.66) pnt_hsv[2] = 0.5;
+		else pnt_hsv[2] = 1;
+
+		out_color = hsv2rgb(dir_hsv) + hsv2rgb(spt_hsv) + hsv2rgb(pnt_hsv);
+		
     }else
     {
         out_color = colorDirectional + colorSpot + colorPoint;
