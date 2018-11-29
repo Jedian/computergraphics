@@ -1,0 +1,6 @@
+Testing with small values, we can notice that the specular highlight 
+tends to move to the left of the center, because the calculations are 
+made segment by segment and starts on the leftmost point of the segment.
+With phong shading, we are interpolating normals, so with that we can 
+calculate the lighting on every fragment individually, instead of a set 
+of points, thus getting a smoother and more correct lighting.
