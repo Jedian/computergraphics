@@ -79,19 +79,9 @@ vec3 phong(
 
 
     vec3 color_ambient  = vec3(0);
-	  vec3 color_diffuse  = vec3(0);
+    vec3 color_diffuse  = vec3(0);
     vec3 color_specular = vec3(0);
 
-    //TODO 6.6 a)
-    //Compute the diffuse, specular and ambient term of the phong lighting model.
-    //Use the following parameters of the light object:
-    //  light.color
-    //  light.diffuseIntensity
-    //  light.specularIntensity
-    //  light.shiny
-    //  light.ambientIntensity
-	  //as well as the other function parameters.
-    
     color_ambient = surfaceColor*light.ambientIntensity;
 
     float cosnl = max(0, dot(n, l));
@@ -101,14 +91,10 @@ vec3 phong(
     vec3 r = 2*(cosnl)*n - l;
     float cosvr = clamp(dot(v, r), 0.0, 1.0);
     float pows = pow(cosvr, light.shiny);
-    color_specular = light.color*light.specularIntensity*pows; // ou surfacecolor?
-    //if(color_specular.x > 255 || color_specular.y > 255 || color_specular.z > 255)
-	//return vec3(50, 50, 50);
-	//color_specular = vec3(0, 0, 0);
+    color_specular = light.color*light.specularIntensity*pows;
 
     return color_ambient + color_diffuse + color_specular;
-    //return max(color_ambient + color_diffuse + color_specular, vec3(0, 0, 0));
-	
+
 }
 
 
@@ -143,29 +129,20 @@ void main()
 
     if(directionalLight.enable)
     {
-        // TODO 6.6 b)
-        // Use the uniforms "directionalLight" and "objectColor" to compute "colorDirectional". 
         colorDirectional = phong(directionalLight, objectColor, n, normalize(-directionalLight.direction), v);
-        //colorDirectional = vec3(0); //<- change this line
-
-
     }
 
     if(pointLight.enable)
     {
-        //TODO 6.6 c)
-        //Use the uniforms "pointLight" and "objectColor" to compute "colorPoint".
         float dist = distance(pointLight.position, positionWorldSpace);
         float att = pointLight.attenuation.x + pointLight.attenuation.y*dist + pointLight.attenuation.z*dist*dist;
         vec3 l = normalize(pointLight.position - positionWorldSpace);
-        colorPoint = phong(pointLight, objectColor, n, l, v)/att; //<- change this line
+        colorPoint = phong(pointLight, objectColor, n, l, v)/att;
 
     }
 
     if(spotLight.enable)
     {
-        //TODO 6.6 d)
-        //Use the uniforms "spotLight" and "objectColor" to compute "colorSpot".
         float angle = acos(dot(normalize(positionWorldSpace - spotLight.position), spotLight.direction));
         vec3 l = normalize(spotLight.position - positionWorldSpace);
         float dist = distance(spotLight.position, positionWorldSpace);
@@ -182,26 +159,24 @@ void main()
 
     if(cellShading)
     {
-        //TODO 6.6 e) 
-		//Quantize the three components to implement cell shading.
-		vec3 dir_hsv = rgb2hsv(colorDirectional);
-		vec3 spt_hsv = rgb2hsv(colorSpot);
-		vec3 pnt_hsv = rgb2hsv(colorPoint);
+        vec3 dir_hsv = rgb2hsv(colorDirectional);
+        vec3 spt_hsv = rgb2hsv(colorSpot);
+        vec3 pnt_hsv = rgb2hsv(colorPoint);
 
-		if(dir_hsv[2] < 0.33) dir_hsv[2] = 0;
-		else if(dir_hsv[2] < 0.66) dir_hsv[2] = 0.5;
-		else dir_hsv[2] = 1;
+        if(dir_hsv[2] < 0.33) dir_hsv[2] = 0;
+        else if(dir_hsv[2] < 0.66) dir_hsv[2] = 0.5;
+        else dir_hsv[2] = 1;
 
-		if(spt_hsv[2] < 0.33) spt_hsv[2] = 0;
-		else if(spt_hsv[2] < 0.66) spt_hsv[2] = 0.5;
-		else spt_hsv[2] = 1;
+        if(spt_hsv[2] < 0.33) spt_hsv[2] = 0;
+        else if(spt_hsv[2] < 0.66) spt_hsv[2] = 0.5;
+        else spt_hsv[2] = 1;
 
-		if(pnt_hsv[2] < 0.33) pnt_hsv[2] = 0;
-		else if(pnt_hsv[2] < 0.66) pnt_hsv[2] = 0.5;
-		else pnt_hsv[2] = 1;
+        if(pnt_hsv[2] < 0.33) pnt_hsv[2] = 0;
+        else if(pnt_hsv[2] < 0.66) pnt_hsv[2] = 0.5;
+        else pnt_hsv[2] = 1;
 
-		out_color = hsv2rgb(dir_hsv) + hsv2rgb(spt_hsv) + hsv2rgb(pnt_hsv);
-		
+        out_color = hsv2rgb(dir_hsv) + hsv2rgb(spt_hsv) + hsv2rgb(pnt_hsv);
+
     }else
     {
         out_color = colorDirectional + colorSpot + colorPoint;
