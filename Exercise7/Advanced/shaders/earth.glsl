@@ -108,24 +108,17 @@ void main() {
         vec3 dayColor = vec3(1);
         vec3 nightColor = vec3(0);
 
-        // TODO 7.5 a)
-        // Add color to the earth. Use 'nightColor' on the back side of the sphere, dayColor on the front side.
-		// Blend between nightColor and dayColor depending on dot(n,l) in the diffuse term!
-		// Make sure that the transition is smooth by using the GLSL function mix().
-		
         if(useColor) //Note: 'useColor' is passed as a uniform and can be enabled in the GUI.
         {
-            dayColor = vec3(1); //<- TODO: read from the texture 'earthColor' here
-            nightColor = vec3(0); //<- TODO: read from the texture 'earthNight' here
+            dayColor = vec3(texture(earthColor, tc));
+            nightColor = vec3(texture(earthNight, tc));
         }
 
-        vec3 color_diffuse = sunColor * dayColor * max(0, dot(n, l)); // <- change this line for 7.5a)
+        vec3 color_diffuse = sunColor * mix(nightColor,dayColor,max(0, dot(n, l))); 
 
-        // TODO 7.5 b)
-        // Read and use the specular intensity value stored in the 'earthSpec' texture.
-		// The texture stores values between 0 and 1. Scale these values to [0, 0.7] and 
-		// then clamp values smaller than 0.2 to 0.2 to obtain a natural look.
-        vec3 color_specular = sunColor * pow(max(0.0, dot(v, r)), 20); // <-- modify this line with the specular intensity value
+	vec3 earthSpec_intensity = clamp(0.7*vec3(texture(earthSpec, tc)), 0.2f, 0.7f) ;
+	
+        vec3 color_specular = sunColor * earthSpec_intensity * pow(max(0.0, dot(v, r)), 20); // <-- modify this line with the specular intensity value
 
 
         color = color_diffuse + color_specular;

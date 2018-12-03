@@ -26,19 +26,11 @@ in vec3 position;
 
 void main() {
 
-    //TODO 7.4 b)
+    vec4 wp = inverse(projView)* vec4(position, position.z); // <-- replace this line
 
-    // 1. Compute world position of current fragment.
-	//	  Use the matrix 'projView' to do so.
-    vec4 wp = vec4(0); // <-- replace this line
+    vec3 direction = normalize(normalize(cameraPos)-normalize(vec3(wp))); // <-- replace this line
 
-    // 2. Compute view direction.
-	//	  Use the variable 'cameraPos' to do so.
-    vec3 direction; // <-- replace this line
-
-    // 3. Convert view direction to texture coordinates and read from the 'color' texture.
-    vec2 tc = vec2(0); // <-- replace this line
+    vec2 tc = sphericalToTexture(cartesianToSpherical(direction)); // <-- replace this line
     out_color = texture(color,tc);
-
 
 }
