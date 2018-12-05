@@ -100,13 +100,11 @@ var Basic2_1 = function () {
             var M = [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, -2.0, -1.0, 0.0, 0.0, -3.0, 0.0];
 
 
-            // TODO 7.2
-            // Project triangle (Use the helper functions matrixVectorProduct and dehomogenize defined above.).
-            // Then render the projected triangle instead of the original triangle!
-            // Replace this dummy line!
-            drawTriangle(context, canvasWidth, canvasHeight, triangle, ["A'", "B'", "C'"]);
+            var projected = [dehomogenize(matrixVectorProduct(M,[triangle[0][0], triangle[0][1], triangle[0][2], 1])),
+                             dehomogenize(matrixVectorProduct(M,[triangle[1][0], triangle[1][1], triangle[1][2], 1])),
+                             dehomogenize(matrixVectorProduct(M,[triangle[2][0], triangle[2][1], triangle[2][2], 1]))];
 
-
+            drawTriangle(context, canvasWidth, canvasHeight, projected, ["A'", "B'", "C'"]);
 
             // draw axis
             arrow(context, 15, 285, 15, 255);
@@ -136,16 +134,17 @@ var Basic2_2 = function () {
             // projection matrix
             var M = [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, -2.0, -1.0, 0.0, 0.0, -3.0, 0.0];
 
+            var projected = [dehomogenize(matrixVectorProduct(M,[triangle[0][0], triangle[0][1], triangle[0][2], 1])),
+                             dehomogenize(matrixVectorProduct(M,[triangle[1][0], triangle[1][1], triangle[1][2], 1])),
+                             dehomogenize(matrixVectorProduct(M,[triangle[2][0], triangle[2][1], triangle[2][2], 1]))];
 
-            // TODO 7.2
-            // 1. Project the triangle.
+            var midtriangle = [midPoint(projected[0],projected[1]),
+                               midPoint(projected[1],projected[2]),
+                               midPoint(projected[2],projected[0])]
 
-            // 2. Compute the midpoints of the edges (Use the helper function midPoint defined above!)
-            //    and store them in another triangle.
+            drawTriangle(context, canvasWidth, canvasHeight, projected, ["A'", "B'", "C'"]);
 
-            // 3. Draw the triangles (Leave last argument undefined for inner triangle!).
-
-
+            drawTriangle(context, canvasWidth, canvasHeight, midtriangle);
 
             // draw axis
             arrow(context, 15, 285, 15, 255);
@@ -181,16 +180,26 @@ var Basic2_3 = function () {
             // projection matrix
             var M = [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, -2.0, -1.0, 0.0, 0.0, -3.0, 0.0];
 
+            var projected = [(matrixVectorProduct(M,[triangle[0][0], triangle[0][1], triangle[0][2], 1])),
+                             (matrixVectorProduct(M,[triangle[1][0], triangle[1][1], triangle[1][2], 1])),
+                             (matrixVectorProduct(M,[triangle[2][0], triangle[2][1], triangle[2][2], 1]))];
 
-            // TODO 7.2
-            // 1. Project the triangle and store it in homogeneous coordinates.
 
-            // 2. Compute the mid points, but this time in homogeneous coordinates (Make use of midPoint()!).
+            var midtriangle = [midPoint(projected[0],projected[1]),
+                               midPoint(projected[1],projected[2]),
+                               midPoint(projected[2],projected[0])]
 
-            // 3. Dehomogenize the points.
+            var dehom_projected = [dehomogenize(projected[0]),
+                                   dehomogenize(projected[1]),
+                                   dehomogenize(projected[2])];
 
-            // 4. Draw the triangles (Leave last argument undefined for inner triangle!).
+            var demoh_mid = [dehomogenize(midtriangle[0]),
+                             dehomogenize(midtriangle[1]),
+                             dehomogenize(midtriangle[2])];
 
+            drawTriangle(context, canvasWidth, canvasHeight, dehom_projected, ["A'", "B'", "C'"]);
+
+            drawTriangle(context, canvasWidth, canvasHeight, demoh_mid);
 
             // draw axis
             arrow(context, 15, 285, 15, 255);

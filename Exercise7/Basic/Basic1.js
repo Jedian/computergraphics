@@ -14,35 +14,18 @@ var Basic1 = function () {
     }
 
     function doAlphaBlending(index, images, alphas) {
+        var blendCircles = [1, 1, 1];
 
-        // TODO 8.2:    Compute the blended color (as an array of 3 values
-        //              in the interval [0, 255]) for one pixel
-        //              of the resulting image. "images" is the array
-        //              of circle images from left to right, "alphas"
-        //              contains the respective alpha values. "index"
-        //              is the linearized index for the images, so for
-        //              example with images[2][index + 1] you can address
-        //              the green color channel of the current pixel 
-        //              in the third image.
+        for (var i=0; i < images.length; ++i){
+            if (images[i][index + 3]) 
+            {
+                blendCircles[0] = (blendCircles[0] * (1- alphas[i])) + ((images[i][index  ]/255.0) * alphas[i]);
+                blendCircles[1] = (blendCircles[1] * (1- alphas[i])) + ((images[i][index+1]/255.0) * alphas[i]); 
+                blendCircles[2] = (blendCircles[2] * (1- alphas[i])) + ((images[i][index+2]/255.0) * alphas[i]);
+            }
+        }
 
-        // 1. Set up a color as a return value, and initialize it with the 
-        //    desired background color.
-
-        // 2. Loop over the four circle images in the correct order to blend
-        //    them one after another.
-
-        // 3. Compute the resulting alpha value for the current pixel.
-        //    If it is a background pixel of the current image (denoted
-        //    with a zero alpha channel value), it should not contribute to the
-        //    resulting image. Otherwise, it should contribute with the 
-        //    alpha value given through the sliders.
-
-        // 4. Compute the resulting color using alpha blending in all
-        //    three color channels.
-
-        // 5. Return the resulting color. Replace the following dummy line.
-        return [255, 255, 255];
-
+        return [blendCircles[0]*255,blendCircles[1]*255,blendCircles[2]*255];
     }
 
     function Render() {
