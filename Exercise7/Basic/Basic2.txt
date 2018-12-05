@@ -1,7 +1,7 @@
 b. Compute the centers of the edges PA′,B′, PB′,C′ and PC′,A′ from A′, B′ and C′. Is the drawn inner triangle
  perspectively correct? Which interpolation method do you know that would provide the same result? 
 
-No, the triangle ist not perspectively correct, it is based only on the projection triangle, so the points are
+No, the triangle is not perspectively correct, it is based only on the projection triangle, so the points are
 not in the middle of the triangle, but in the middle of the projected triangle only.
 
 c. Compute the transformed and dehomogenized centers of the edges P′A,B, P′B,C and P′C,A from PA,B, PB,C and PC,A. Is the drawn inner triangle perspectively correct? 
