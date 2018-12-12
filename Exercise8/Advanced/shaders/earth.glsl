@@ -81,12 +81,7 @@ void main()
 
     if(translateVertices)
     {
-        // TODO 8.3 c)
-        // Translate object space vertices ('positionObjectSpace') along object space normals ('normalObject').
-        // Use the texture 'earthBump' and the uniform 'heightScale'.
-	mat3 TBN = mat3(tangent, bitangent, normalObject);
 	vec4 text = texture(earthBump, tc);
-	vec3 n = TBN * vec3(text);
         positionObjectSpace += normalObject * text.x * heightScale;
     }
 
