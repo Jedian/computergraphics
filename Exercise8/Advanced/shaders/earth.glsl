@@ -75,12 +75,8 @@ void main()
 
     if(normalMethod == 1) //Vertex TBN
     {
-        // TODO 8.3 a)
-        // Compute tangent and bitangent for this vertex.
-        // Hint: Compute them in object space (where 'normalObject' is already given)
-		// and then transform them to world space using the model matrix 'model'!
-        tangent = vec3(0);
-        bitangent = vec3(0);
+        tangent = cross(vec3(0, 1, 0), normal);
+        bitangent = cross(normal, tangent);
     }
 
     if(translateVertices)
@@ -135,19 +131,13 @@ void main() {
     }
     if(normalMethod == 1)
     {
-        // TODO 8.3 a)
-        // Compute TBN matrix from vertex shader inputs: 'tangent', 'bitangent', and 'normal'.
-        // Load normal from the texture and transform it to world space.
-		// Note that all directions (with components in [-1, 1]) are stored in a textures
-		// which only supports positive values. That is why you have to map the normal 
-		// from [0, 1] back to [-1, 1] before you can transform it with the TBN matrix.
-        // The final normal in world space should be stored in 'n'.
         mat3 TBN = mat3(
-                    vec3(1,0,0),
-                    vec3(0,1,0),
-                    vec3(0,0,1)
+                    tangent,
+                    bitangent,
+                    normal
                     );
-        n = vec3(0);
+	vec4 text = 2*texture(earthNormal, tc) - vec4(1, 1, 1, 1);
+        n = TBN * vec3(text);
     }
     if(normalMethod == 2)
     {
