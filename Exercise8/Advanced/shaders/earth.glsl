@@ -84,7 +84,10 @@ void main()
         // TODO 8.3 c)
         // Translate object space vertices ('positionObjectSpace') along object space normals ('normalObject').
         // Use the texture 'earthBump' and the uniform 'heightScale'.
-        positionObjectSpace += vec3(0);
+	mat3 TBN = mat3(tangent, bitangent, normalObject);
+	vec4 text = texture(earthBump, tc);
+	vec3 n = TBN * vec3(text);
+        positionObjectSpace += normalObject * text.x * heightScale;
     }
 
     positionWorldSpace = vec3(model * vec4(positionObjectSpace, 1));
@@ -132,8 +135,8 @@ void main() {
     if(normalMethod == 1)
     {
         mat3 TBN = mat3(
-                    tangent,
-                    bitangent,
+                    normalize(tangent),
+                    normalize(bitangent),
                     normal
                     );
 	vec4 text = 2*texture(earthNormal, tc) - vec4(1, 1, 1, 1);
@@ -141,17 +144,19 @@ void main() {
     }
     if(normalMethod == 2)
     {
-        // TODO 8.3 b)
-        // - Compute the screen space derivatives of the position and texture coordinates with dFdx(...) and dFdy(...).
-        // - Use the formula on the exercise sheet to compute T and B.
-        // - Compute the world space normal similar to 8.3 a).
-
+	vec3 px = dFdx(positionWorldSpace);
+	vec3 py = dFdy(positionWorldSpace);
+	vec2 cx = dFdx(tc);
+	vec2 cy = dFdy(tc);
+	vec3 tangentp = (cross(py, normal)*cx.x) + (cross(normal, px)*cy.x);
+	vec3 bitangentp = (cross(py, normal)*cx.y) + (cross(normal, px)*cy.y);
         mat3 TBN = mat3(
-                    vec3(1,0,0),
-                    vec3(0,1,0),
-                    vec3(0,0,1)
+                    normalize(tangentp),
+                    normalize(bitangentp),
+                    normal
                     );
-        n = vec3(0);
+	vec4 text = 2*texture(earthNormal, tc) - vec4(1, 1, 1, 1);
+        n = TBN * vec3(text);
     }
 
 
@@ -173,17 +178,12 @@ void main() {
 		}
         if(useClouds)
         {
-            // TODO 8.3 d)
-            // Diminish dayColor to fake cloud shadows.
-			// For a cloud value of 1, the dayColor should 
-			// be diminished by a factor of 0.2. For a
-			// cloud value of 0, the dayColor should not 
-			// be diminished at all. For all values in between,
-			// you should interpolate!
-            float clouds = 0.5f;
-            dayColor *=  clouds; 
-		}
-		vec3 color_diffuse = sunColor * mix(nightColor, dayColor, max(0, dot(n, l)));
+            vec4 text = texture(earthClouds, tc);
+            float clouds = text.x * clamp(dot(n, normalize(sunPosition-positionWorldSpace)), 0, 1);
+
+	    dayColor *= mix(1.0, 0.0, clouds); 
+	}
+	vec3 color_diffuse = sunColor * mix(nightColor, dayColor, max(0, dot(n, l)));
 
 
 
