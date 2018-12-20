@@ -163,17 +163,19 @@ Quaternion slerp(Quaternion x, Quaternion y, float t)
     // TODO 9.3 d)
     // Spherical linear interpolation (slerp) of quaternions.
     // Compute the interpolated quaternion and return it normalized.
+    Quaternion difs;
+    Quaternion result;
     if(dot(x, y) > 1-epsilon){
-	vec3 imgli = mix(x.img, y.img, t);
-	float realli = mix(x.real, y.real, t);
-	// x + t * (y - x) //normalize
-	return Quaternion(imgli, realli).normalize();
+	difs.img = y.img - x.img;
+	difs.real = y.real - x.real;
+	result = x + difs*t;
+	return result;
     }
 
     float omega = acos(dot(x, y));
     float s1 = sin((1-t)*omega)/sin(omega);
     float s2 = sin(t*omega)/sin(omega);
-    Quaternion result = x*s1 + y*s2;
+    result = x*s1 + y*s2;
     
     return result;
 
