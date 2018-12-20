@@ -23,11 +23,10 @@ void FPSCamera::turn(vec2 relMouseMovement)
 
 	Quaternion rotx(vec3(0, 1, 0), dx);
 	Quaternion roty(vec3(1, 0, 0), dy);
-	printf("%.20f %.20f\n", dx, dy);
+	//printf("%.20f %.20f\n", dx, dy);
 
-	Quaternion newOrientation;
-	newOrientation = roty*(currentTransformation.orientation*rotx);
-
+	Quaternion newOrientation = currentTransformation.orientation;
+	newOrientation = rotx*(newOrientation*roty);
 
 	currentTransformation.orientation = newOrientation;
 	lastTransformation.orientation = currentTransformation.orientation;

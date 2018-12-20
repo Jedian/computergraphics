@@ -3,8 +3,8 @@
 
 Quaternion::Quaternion()
 {
-    real = 0;
-    img = vec3(0.0);
+    real = 1;
+    img = vec3(0.0, 0.0, 0.0);
     
 }
 

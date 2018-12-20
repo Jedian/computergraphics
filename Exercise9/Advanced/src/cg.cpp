@@ -305,7 +305,7 @@ void CG::decoupledMainLoop()
 			nextUpdate += ticksPerUpdate;
 		}
 
-		double alpha = 0.5;//mix(0.0, 1.0, (float) nextUpdate - currentTime);
+		double alpha = 0.5;
 
 		// Everything to the "stop" comment counts towards "render".
 		if(interpolationMethod == 0) // No interpolation
@@ -326,7 +326,8 @@ void CG::decoupledMainLoop()
 		}
 		// stop
 
-		Uint64 waitTime = min(nextRender, nextUpdate)-currentTime; // wait time in ticks (compute this)
+		Uint64 waitTime = currentTime<min(nextRender, nextUpdate)?min(nextRender, nextUpdate)-currentTime:0; // wait time in ticks (compute this)
+
 		// Code for sleeping:
 		double w = double(waitTime) / SDL_GetPerformanceFrequency();
 		std::this_thread::sleep_for( std::chrono::duration<double, std::ratio<1,1>>(w) );
