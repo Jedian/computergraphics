@@ -4,25 +4,19 @@ var Basic2 = function () {
     var steps = 1;
 
     function createBox() {
-
-        // TODO 9.2a)   Set up a shape node, a box node,
-        //              an appearance node and a material
-        //              node. Use the material node to 
-        //              define the color of the box as white.
-        //              Then, append the material node to the 
-        //              appearance node, both appearance and 
-        //              box node to the shape node. Return the
-        //              shape node.
-        //              You will have to make use of the functions
-        //              createElement(), setAttribute() and 
-        //              appendChild(). You can find examples for
-        //              their usage in createScene().
-
         var shape = document.createElement("shape");
+        var box = document.createElement("box");
+        var appearance = document.createElement("appearance");
+        var material = document.createElement("material");
+
+        material.setAttribute('diffusecolor', '1 1 1');
+
+        appearance.appendChild(material);
+
+        shape.appendChild(appearance);
+        shape.appendChild(box);
+
         return shape;
-
-
-
     }
 
     function refine(parents) {
@@ -50,20 +44,14 @@ var Basic2 = function () {
     }
 
     function constructChildTransformation(parent, translation) {
+        var transform = document.createElement("transform");
 
-        // TODO 9.2b):  Create a new transformation node
-        //              for one child box (or for further
-        //              refinement!). The child box
-        //              has to be scaled to one third of
-        //              its parent's size, and the translation
-        //              has to be applied. Finally, the 
-        //              new transformation should be appended
-        //              to its parent transformation.
-        //              Again, use createElement(), setAttribute()
-        //              and appendChild().
-        //              Replace the following dummy line.
+        transform.setAttribute("scale", "0.33 0.33 0.33");
+        transform.setAttribute("translation", translation);
 
-        return parent;
+        parent.appendChild(transform);
+
+        return transform;
 
     }
 

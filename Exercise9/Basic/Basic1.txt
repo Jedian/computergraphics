@@ -1,0 +1,4 @@
+Z-fighting happens when you have a low Depth Bit Quantization and the 2 parallel primitives are close together, causing the code
+to be unable to detect the depht difference and then not choosing the right primitive to render. You can see this effect by 
+setting the Depth Bit Quantization to minimum and enabling Depth Test: pass greater. The test will fail and will get the lesser
+depth primitive instead. 
