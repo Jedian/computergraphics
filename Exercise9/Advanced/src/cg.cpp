@@ -295,36 +295,16 @@ void CG::decoupledMainLoop()
 			}
 		}
 
-
-
-		// TODO 9.5 a)
-		// 1. Given updateRate and frameRate, compute the time between two updates and frames in ticks.
-		// Note: You can convert 'ticks' into seconds by dividing with SDL_GetPerformanceFrequency().
 		Uint64 ticksPerUpdate = SDL_GetPerformanceFrequency()/updateRate;
 		Uint64 ticksPerRender = SDL_GetPerformanceFrequency()/frameRate;
 
 		currentTime = SDL_GetPerformanceCounter();
 
-		// You can remove these two lines
-		// They are only required in a "bad" main loop with variable timestep
-
-		// 2. Only update if "nextUpdate" is in the past.
-		// - After updating increase "nextUpdate" by the time between two updates.
-		// - Use the correct (fixed) dt.
 		if(nextUpdate < currentTime){
 			update(1.0f/updateRate);
 			nextUpdate += ticksPerUpdate;
 		}
 
-		// 3. Similar to (2.) render only if "nextRender" is in the past.
-		// - Interpolate, render, and swapwindow all count towards "render".
-		// - After rendering increase "nextRender" by the time between two frames.
-		// - Side note: An uncapped frame rate can be achieved by not increasing "nextRender".
-		// - Use the correct (fixed) dt.
-
-		// TODO 9.5 b)
-		// Compute the correct interpolation weight "alpha".
-		// The weight is the linear interpolation between the last and next update at the current point of time.
 		double alpha = 0.5;//mix(0.0, 1.0, (float) nextUpdate - currentTime);
 
 		// Everything to the "stop" comment counts towards "render".
@@ -345,12 +325,6 @@ void CG::decoupledMainLoop()
 			nextRender += ticksPerRender;
 		}
 		// stop
-
-		// TODO 9.5 c)
-		// Passively wait until the next update or render (depending on which comes first).
-		// - Compute the time of the next event.
-		// - Check if the next event is in the future and if yes wait the appropriate time.
-
 
 		Uint64 waitTime = min(nextRender, nextUpdate)-currentTime; // wait time in ticks (compute this)
 		// Code for sleeping:
