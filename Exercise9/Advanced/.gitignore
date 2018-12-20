@@ -1,0 +1,17 @@
+/*
+!/shaders
+!/data
+
+!.gitignore
+
+#ignore everything in src except cg and main
+!src/
+src/*
+!src/cg.cpp
+!src/cg.h
+!src/main.cpp
+!src/fps_camera.cpp
+!src/fps_camera.h
+!src/quaternion.cpp
+!src/quaternion.h
+!src/object.h
