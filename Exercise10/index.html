@@ -1,0 +1,309 @@
+﻿
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="./resources/css/print.css">
+
+    <meta name="lecture" content="Computer Graphics">
+    <meta name="exerciseNr" content="10">
+    <meta name="exercisePrefix" content="Exercise">
+    <meta name="term" content="Winter Term 2018/19">
+    <meta name="dueDate" content="January 18, 2019, 11:59 am">
+
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+    </script>
+
+    <script type="text/javascript" async
+            src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+    </script>
+
+    <script type="text/javascript" src="./resources/js/sheet.js"></script>
+
+</head>
+
+
+<body>
+
+    <page size="A4">
+        <content>
+		
+            <exercise prefix="Basic Exercises" title="Render Engines - Unity" points=10>
+                <p>
+                    This exercise sheet revolves around Unity as an example of a render engine.
+                    Using render engines, you can quickly prototype both 2D and 3D programs using their powerful in-built properties such as physics engine, lighting and behavior through simple scripting.
+                </p>
+                <p>
+                    For both Basic and Advanced part, we want you to program a little game from scratch – with Unity, this is easier than one might expect.
+                    If you only do the Basic part, the game will not be complete, but you can already win/lose it.
+                    If you additionally do the Advanced part, the game has all features.
+                    We use <b>Unity 2018.3.0f2</b>, which can both be found on the HuberCIP machines (<code>addpackage unity-2018.3 && Unity</code>)
+                    and <a href="https://unity3d.com/de/get-unity/download"> downloaded </a> for free for your own PC.
+                </p>
+                <p>
+                    The game consists of a moving circular plane, a ball rolling on it and coins spawning at random locations.
+                    The player’s task is to tilt the plane and let the ball roll around to collect as many coins as possible and get as big as possible.
+                    Every time the ball collects a coin, it gets bigger, making it easier to collect more coins.
+                    A size decay lets it shrink again when no coins are collected.
+                    But beware – the game is over when the ball rolls off the plane!
+                    In the picture below, you can see a screenshot of Get Big or Die Tryin’.
+                    There is also a small reference video in your exercise folder to show you the game in action.
+                </p>
+                <center>
+                    <img src="images/reference.png" width=600>
+                </center>
+                
+      
+                <task title="Get Big or Die Tryin' - Part I" points=10 submitfile="Assets.zip">
+
+                    <subtask title="Game Setup - GameObjects and Their Properties" points="3">
+
+                        <p>
+                            Open Unity and create a new Unity ID or login with your existing ID if you already have one.
+                            Choose Unity Personal to use Unity free of charge.
+                            By clicking "New", create a new project.
+                            Call your project “GetBig” and choose a location of your choice for saving.
+                            Projects are saved in folders.
+                            In the end, you will have to zip the "Assets" folder contained in the project folder and upload it as your solution.
+                        </p>
+                        <p>
+                            Once you are done, click "Create" to enter your project.
+                            Your empty project screen is divided into several windows.
+                            In the middle, you see the scene view, so far consisting of only a camera and a directional light.
+                            The hierarchy view on the left shows you a synopsis of the current objects in your scene.
+                            The most important window is the Inspector on the right.
+                            It opens up to let you inspect the properties of an object selected via click.
+                            You can select camera or light source to test this.
+                            Your newly created scene is saved as "SampleScene".
+                            Always make sure you save it in between programming steps.
+                        </p>
+                        <p>
+                            As a first step, you need the three objects the game consists of.
+                            Every object in Unity belongs to the class GameObject.
+                            Unity provides some 3D primitives as pre-built GameObjects.
+                            You can create them selecting GameObject $\rightarrow$ 3D Object in the ribbon at the top.
+                            Create the following three GameObjects:
+                        </p>
+                        <ul>
+                            <li>
+                                for the ground plane:
+                                Create a cylinder object.
+                                In the Inspector, set its scale to 10 in x and z direction and 0.1 in y direction to make it a plane.
+                                In the Project window on the bottom, create a new material using right click $\rightarrow$ Create $\rightarrow$ Material and call it "GroundMaterial".
+                                In the Inspector, set the material's albedo color to red, then drag it onto the ground plane to color it with the new material.
+                            </li>
+                            <li>
+                                for the ball:
+                                Create a sphere object.
+                                Set its scale to 0.5 in all directions and lift it to y=2 either using the position property in the inspector or the green arrow.
+                            </li>
+                            <li>
+                                for a coin:
+                                Create a cylinder again.
+                                This time, scale it to 0.5 in x and z direction and 0.05 in y direction to account for a coin's size.
+                                Turn it around the x axis by 90 degree to let it stand rather than lie.
+                                Place it somewhere over the ground.
+                                Create a new material "CoinMaterial" with yellow albedo and metallic property set to 1, and color the coin with it.
+                            </li>
+                        </ul>
+                        <p>
+                            You can see the three created objects showing up in the hierarchy on the left.
+                            Call them "Ground", "Ball" and "Coin" for better overview.
+                            When you are done, you can click on the play button at the top to enter game mode.
+                            It should look like the image below.
+                        </p>
+                        <img class="floatRight" src="images/after a.png" width=600>
+                    </subtask>
+
+                    <subtask title="Plane Control – Components, Physics and Scripting" points="7">
+                        <p>
+                            So far, the ball does not follow physics: As you can see, it does not fall onto the plane.
+                            For a GameObject to be affected by physics, it has to have a "Rigidbody" component attached to it.
+                            In the Inspector, click "Add Component", search for "Rigidbody" and attach the component.
+                            In this component, activate gravity.
+                        </p>
+                        <p>
+                            As you can see, the ball still does not fall.
+                            This is because the collider for the ground plane is too big.
+                            For physics, so-called colliders are used, which are visualized through green lines.
+                            As the ground plane was created as a cylinder, it has a capsule collider attached to it (again, as a component).
+                            Remove this component by right-clicking on it, add a "Mesh Collider" component and make it convex.
+                            Now you can press Play and watch the ball fall.
+                        </p>
+                        <p>
+                            For the plane as well, add a Rigidbody component.
+                            In the component's properties, deactivate the influence of gravity.
+                            Furthermore, fix the absolute position of the plane using the Rigidbody's constraints.
+                        </p>
+                        <p>
+                            Now it is time to move the plane.
+                            Behavior is added through scripts coded in C#.
+                            Add a new script as a new component to the plane.
+                            Call it "MovePlane" and click "Create and Add".
+                            Right-click on the new component and choose "Edit Script".
+                            Visual Studio opens up and shows you the newly created class "MovePlane" which inherits from "MonoBehaviour" and has to implement the two functions "Start" and "Update".
+                            <code>Start()</code> is executed once at the beginning of the program, <code>Update()</code> is called in a loop every cycle.
+                        </p>
+                        <p>
+                            You can get the values for horizontal (A and D or left and right arrow key) and vertical (W and S or up and down arrow key) using
+                            <a href="https://docs.unity3d.com/ScriptReference/Input.GetAxis.html"> Input.GetAxis</a>.
+                            As a first step, get the two values for horizontal and vertical movement inside <code>Update()</code> and use
+                            <a href="https://docs.unity3d.com/ScriptReference/Debug.Log.html"> Debug.Log</a> to show them on the console (at the bottom
+                            of the Unity window) at runtime.
+                            The values returned lie between -1 and 1.
+                            As you will notice, Unity simulates joystick control by interpolating between 0 and -1/1, so you will also receive values in between.
+                        </p>
+                        <p>
+                            Instead of just printing the horizontal and vertical movement values, you should now use them to add different forces to the ground plane.
+                            Unity's physics engine will then take the forces into account and tilt the plane correctly.
+                            Use <a href="https://docs.unity3d.com/ScriptReference/Rigidbody.AddForceAtPosition.html"> Rigidbody.AddForceAtPosition</a> to add
+                            forces like shown in the image:
+                        </p>
+                        <img class="floatRight" src="images/forces.png" width=600>
+                        <p>
+                            You need two <code>AddForceAtPosition</code> statements: One for horizontal (left-right, x direction) and one for vertical (front-back, z direction) tilt.
+                            The forces should be applied in a distance of 1 to the center, always facing to the bottom, so the plane is "pressed" down
+                            at one side.
+                            Use <a href="https://docs.unity3d.com/ScriptReference/Transform.TransformPoint.html">Transform.TransformPoint</a> and
+                            <a href="https://docs.unity3d.com/ScriptReference/Transform.TransformDirection.html">Transform.TransformDirection</a> to transform
+                            positions/directions relative to the plane to absolute (= world-space) positions/directions.
+                            To call <code>AddForceAtPosition</code>, you need the objects Rigidbody component.
+                            You can get access to it using <a href="https://docs.unity3d.com/ScriptReference/GameObject.GetComponent.html">GameObject.GetComponent</a>.
+                            Create a private variable of the type Rigidbody, use <code>GetComponent</code> only once in the <code>Start()</code> method
+                            and store the result in your newly created variable to have access to it in the <code>Update()</code> method.
+                        </p>
+                        <p>
+                            You should now be able to tilt the plane and let the ball roll along it.
+                            You will notice that the ball is too heavy for the plane - set its mass to 0.1 rather than 1.
+                        </p>
+                    </subtask>
+
+                    <p>
+                        The task of this - rather easy - game is to reach the coin with the ball before it falls off the plane!
+                        Okay, okay, this is not THAT much fun, so let's continue with the Advanced part.
+                        Nevertheless, if you only want to submit the Basic exercise, zip your Assets folder now and upload it to EST.
+                    </p>
+
+                </task>
+
+            </exercise>
+        </content>
+    </page>
+
+    <page size="A4">
+        <content>
+
+            <exercise prefix="Advanced Exercises" title="Render Engines - Unity" points=10>
+                
+                <task title="Get Big or Die Tryin' - Part II" points=10 submitfile="Assets.zip">
+                   
+                    <subtask title="Collecting Coins – Triggers and Actions" points="4">
+						<p>
+							Right now, the ground plane collides with the coin when the two of them meet; 
+							this is the default behavior for the colliders attached to GameObjects.
+							To use it as a trigger for certain actions instead, check the "Is Trigger" property of the coin's collider.
+							Now, both the ball and the ground plane can pass through the coin.
+						</p>
+						<p>
+							In order to use the triggering capability of the coin's collider, attach a new script, this time not to the plane, but to the coin.
+							Call it "MoveCoin".
+							Additionally to the two predefined functions, add a third function <code>OnTriggerEnter</code> 
+							(see <a href="https://docs.unity3d.com/ScriptReference/Collider.OnTriggerEnter.html"> Collider.OnTriggerEnter</a>)
+							to the script.
+							Use <a href="https://docs.unity3d.com/ScriptReference/Object.Destroy.html"> Object.Destroy</a> to destroy the coin
+							once the collider is triggered.
+							As you can see, you can make the coin vanish now by touching it with either the plane or the ball.
+						</p>
+						<p>
+							As coins should only be collected by the ball and not the plane, check whether the other collider involved in the collision
+							is the one attached to the ball.
+							In order to do so, keep a private GameObject reference in the MoveCoin class and set it to the ball object
+							using <a href="https://docs.unity3d.com/ScriptReference/GameObject.Find.html">GameObject.Find</a>.
+						</p>
+						<p>
+							In the <code>Update()</code> method, let the coin rotate around the own axis and hover up and down
+							to make it look more than a "real" game coin.
+							The functions <a href="https://docs.unity3d.com/ScriptReference/Transform.Rotate.html">Transform.Rotate</a>, 
+							<a href="https://docs.unity3d.com/ScriptReference/Transform.Translate.html">Transform.Translate</a> and 
+							<a href="https://docs.unity3d.com/ScriptReference/Mathf.Sin.html">Mathf.Sin</a> might come in handy.
+						</p>
+					</subtask>
+
+					<subtask title="Spawning Coins – Unity Prefabs and Public Attributes" points="5">
+						<p>
+							Now the coin looks good and behaves correctly, it is time to create more of them!
+							It would be seriously annoying to create all of them individually as cylinders, scale them, add material, add behavior...
+							The better way is to create a so-called Prefab containing all properties of an object.
+							To do so, drag the coin from the hierarchy into the project pane at the bottom.
+							You can drag multiple instances of the Coin prefab into your scene. 
+							When you start the game, you can see all coins hover, and vanish when touched by the ball.
+						</p>
+						<p>
+							As it is also annoying to drag all the coins onto the screen, you should instantiate the prefab programmatically.
+							To do so, add a new script called "SpawnCoins" to the ball.
+							In it, write a method to instantiate a new coin using <a href="https://docs.unity3d.com/ScriptReference/Object.Instantiate.html">
+							Object.Instantiate</a>.
+							The coin should be placed between -4 and 4 in x and z direction and between 0 and 3 in y direction in order to be collectable by the ball.
+							For the rotation, use the prefab's original rotation.
+						</p>
+						<p>
+							As you will need the prefab for <code>Instantiate</code>, you will have to keep a GameObject variable holding a reference on it.
+							This time, do not use a private variable and initialize it in the <code>Start()</code> method, but declare it public.
+							When you do so, you will find a new property to the script in the Inspector. 
+							Drag the coin prefab there to give the script access to it.
+						</p>
+						<p>
+							A new coin should be spawned every second. 
+							Use <a href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.InvokeRepeating.html">MonoBehaviour.InvokeRepeating</a> to call your previously defined method once a second.
+							Now you can remove all manually created coins as the program will create them automatically.
+						</p>
+						<p>
+							The ball should grow each time it collects a coin, and its size should decay again over time.
+							To make this work, change two things:
+							<ul>
+								<li>
+									In the <code>MoveCoin</code> script, increase the ball's scale by 0.1 in all directions every time a coin is collected.
+									You will need its <a href="https://docs.unity3d.com/ScriptReference/Transform-localScale.html"> Transform.localScale</a> 
+									property to do so.
+								</li>
+								<li>
+									In the <code>SpawnCoins</code> script, use the function which is called every second.
+									If the <code>localScale</code> of the ball exceeds 0.5, multiply it with 0.99 to get a decent decay.
+								</li>
+							</ul>
+						</p>
+					</subtask>
+					
+					<subtask title="Making It Playable" points="1">
+						<p>
+							Right now, the ball is rather hard to control, and you cannot quite see the distances between ball and coins well.
+							To make the game a really good one, there are some finishing touches left:
+						</p>
+							<ul>
+								<li>
+									Add some slowing drag (for example, 3) to the ball's Rigidbody component.
+									To also slow down the plane's movement, add some angular drag (as its movement is angular), for example 1.
+								</li>
+								<li>
+									Make the light shine orthogonally onto the ground so shadows are cast directly below coins.
+								</li>
+								<li>
+									Change the camera's position and rotation in a way that makes you see the ball better even when the 
+									ground plane is strongly tilted.
+								</li>
+							</ul>
+						<p>
+							You can also fine tune the game in any other way if you like. 
+							Now you can show your coin-eating abilities - how big can you get?
+						</p>
+					</subtask>
+
+                </task>
+
+
+            </exercise>
+        </content>
+    </page>
+</body>
