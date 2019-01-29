@@ -74,10 +74,6 @@ layout (location = 0) out vec4 out_color;
 float fresnel(float n1, float n2, float cosThetaI)
 {
 
-    // TODO 12.2 b)
-    // Compute the reflectance with the fresnel equation.
-    // Handle total internal reflection!
-
     float sinThetaI = sqrt(1 - cosThetaI*cosThetaI);
 
     float q = (n1/n2* sinThetaI);
@@ -167,8 +163,6 @@ vec3 trace(Ray primaryRay)
     int stackSize = 0;
     TraceNode stack[MAX_STACK_SIZE];
 
-    // TODO 12.2 a)
-    // Push primaryRay to stack
     TraceNode head;
     head.ray = primaryRay;
     head.depth = 0;
@@ -178,15 +172,9 @@ vec3 trace(Ray primaryRay)
 
     while(stackSize > 0)
     {
-        // TODO 12.2 a)
-        // Pop top node from stack
         TraceNode node;
         node = pop();
 
-        // TODO 12.2 a)
-        // Already termination
-        // - if intensity < INTENSITY_EPSILON
-        // - if depth > maxDepth
         if(node.intensity < INTENSITY_EPSILON || node.depth > maxDepth)
             continue;
 
@@ -210,10 +198,6 @@ vec3 trace(Ray primaryRay)
 
             vec3 N = normalize(inter.normal);
 
-            // TODO 12.2 c)
-            // - Compute cosTheta
-            // - Check for an inner collision and handle it accordingly
-			// - in case of inner collision, do not forget to set m.glass to 1
             float cosTheta = dot(N, -node.ray.direction);
             if(cosTheta < 0){
                 float aux = n1;
@@ -223,10 +207,6 @@ vec3 trace(Ray primaryRay)
                 cosTheta =  dot(N, -node.ray.direction);
             }
 
-            // TODO 12.2 d)
-            // Compute the weights R, T, and D
-            // Use the function "fresnel".
-            // Note: The glass coefficient is stored in the material "m.glass"
             float fres = fresnel(n1, n2, cosTheta);
             float R = node.intensity*fres;
             float T = node.intensity*m.glass*(1.0-fres);
@@ -242,11 +222,6 @@ vec3 trace(Ray primaryRay)
             if(!reflection){ D += R; R = 0;}
             if(!refraction){ D += T; T = 0;}
 
-
-			//======= Reflection =======
-            // TODO 12.2 e)
-            // Compute reflected ray.
-            // Create a "TraceNode" and push it on the stack
             Ray reflected;
             reflected.direction = reflect(node.ray.direction, N);
             reflected.origin = inter.hitPosition + (EPSILON*reflected.direction);
@@ -258,9 +233,6 @@ vec3 trace(Ray primaryRay)
             push(reflectedNode);
 
 			//======= Transmission =======
-            // TODO 12.2 f)
-            // Compute refracted ray.
-            // Create a "TraceNode" and push it on the stack
             Ray refracted;
             refracted.direction = refract(node.ray.direction, N, n1/n2);
             refracted.origin = inter.hitPosition + (EPSILON*refracted.direction);
