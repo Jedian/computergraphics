@@ -85,24 +85,39 @@ Line.prototype.draw = function (context) {
 function Object(primitives) {
     this.primitives = primitives;
 
+    var minx = 9999999999.0, miny = 9999999999.0;
+    var maxx = 0.0, maxy = 0.0;
 
-    // TODO 12.1 a)     Compute the axis-aligned bounding box
-    //                  for the object. The box should be defined by 
-    //                  its bottom left (smallest x- and y-value) and
-    //                  its top right corner (highest x- and y-value).
+    for (var i = primitives.length - 1; i >= 0; i--) {
+        if (primitives[i].p0[0] < minx)
+            minx = primitives[i].p0[0];
+        if (primitives[i].p0[0] > maxx)
+            maxx = primitives[i].p0[0];
 
-    // 1. Compute the axis-aligned bounding box!
-    //    Replace the following dummy line.
-    this.aabb = []; // should be in this format: [[x, y], [x, y]] - [bottom left corner, top right corner]
+        if (primitives[i].p1[0] < minx)
+            minx = primitives[i].p1[0];
+        if (primitives[i].p1[0] > maxx)
+            maxx = primitives[i].p1[0];
+
+        if (primitives[i].p0[1] < miny)
+            miny = primitives[i].p0[1];
+        if (primitives[i].p0[1] > maxy)
+            maxy = primitives[i].p0[1];
+
+        if (primitives[i].p1[1] < miny)
+            miny = primitives[i].p1[1];
+        if (primitives[i].p1[1] > maxy)
+            maxy = primitives[i].p1[1];
+    }
 
 
-    // 2. Compute the primitives to graphically represent the
-    //    bounding box as "Line"s. Use the given color.
+    this.aabb = [[minx,miny],[maxx,maxy]]; // should be in this format: [[x, y], [x, y]] - [bottom left corner, top right corner]
+
     var color = [0.1, 0.1, 0.1];
-    this.aabb_primitives = [];
-
-
-
+    this.aabb_primitives = [new Line([minx,miny], [maxx,miny], color),
+                            new Line([minx,miny], [minx,maxy], color),
+                            new Line([maxx,maxy], [maxx,miny], color),
+                            new Line([maxx,maxy], [minx,maxy], color)];
 }
 
 Object.prototype.draw = function (context) {
@@ -174,57 +189,81 @@ function KDTree(objects) {
     while (stack.length != 0) {
         var node = stack.pop();
 
-
-        // TODO 12.1 b)     Build the kd-tree structure by
-        //                  splitting nodes which contain 
-        //                  too many triangles.
-
         if (node.objects.length > 3) { // The node needs to be split.
 
             // This node should be an inner node from now on.
             node.isInner = true;
 
-            // 1. Compute the split position (x value for split along x axis,
-            //    y value for split along y axis). 
-            //    You can use the functions sort_along_x() and sort_along_y() 
-            //    in order to get a sorted copy of the objects in the node.
-            //    Use the objects' bounding boxes to choose the right split 
-            //    position!
+            var mid = Math.floor(node.objects.length / 2) -1;
+
             if (node.splitAxis == 'x') {
-                // ...
+                var sortedx = sort_along_x(node.objects);
+                node.splitPosition =  (sortedx[mid+1].aabb[0][0] - sortedx[mid].aabb[1][0])/2;
+                node.splitPosition += sortedx[mid].aabb[1][0]
             } else {
-                // ...
+                var sortedy = sort_along_y(node.objects);
+                node.splitPosition = (sortedy[mid+1].aabb[0][1] - sortedy[mid].aabb[1][1])/2;
+                node.splitPosition += sortedy[mid].aabb[1][1]
             }
 
-            // 2. Iterate over the objects in the node and assign them to
-            //    one of the two arrays (via .push()), depending on their
-            //    relative position to the split position.
-            //    Use the objects' bounding boxes to decide!
-            //    Afterwards, the node should not contain any objects,
-            //    so we set its objects to null.
             var objectsLeft = [];
             var objectsRight = [];
             for (var i = 0; i < node.objects.length; i++) {
                 var obj = node.objects[i];
                 if (node.splitAxis == 'x') {
-                    // ...
+                    if (obj.aabb[1][0] <  node.splitPosition)
+                        objectsLeft.push(obj);
+                    else if (obj.aabb[0][0] >  node.splitPosition)
+                        objectsRight.push(obj);
+                    else {
+                        objectsLeft.push(obj);                    
+                        objectsRight.push(obj);
+                    }
                 } else {
-                    // ...
+                    if (obj.aabb[1][1] < node.splitPosition)
+                        objectsLeft.push(obj);
+                    else if (obj.aabb[0][1] >  node.splitPosition)
+                        objectsRight.push(obj);
+                    else {
+                        objectsLeft.push(obj);                    
+                        objectsRight.push(obj);
+                    }
                 }
             }
             node.objects = null;
 
-            // 3. Create two new leafs with the appropriate objects, min, max and splitAxis.
-            //    Afterwards, assign them as the current node's children and push them on
-            //    the stack for further splitting.
             var leftChild;
             var rightChild;
             if (node.splitAxis == 'x') {
-                // ...
+                leftChild = new Node(false, 
+                                    objectsLeft, 
+                                    [node.min[0], node.min[1]],
+                                    [node.splitPosition, node.max[1]],
+                                    'y',0,null);
+
+                rightChild = new Node(false, 
+                                    objectsRight, 
+                                    [node.splitPosition, node.min[1]],
+                                    [node.max[0], node.max[1]],
+                                    'y',0,null);
             } else {
-                // ...
+                leftChild = new Node(false, 
+                                    objectsLeft,
+                                    [node.min[0], node.min[1]],
+                                    [node.max[0], node.splitPosition], 
+                                    'x',0,null);
+
+                rightChild = new Node(false, 
+                                    objectsRight,
+                                    [node.min[0], node.splitPosition],
+                                    [node.max[0], node.max[1]],
+                                    'x',0,null);
             }
-            // ...
+
+            node.children = [ leftChild, rightChild ];
+
+            stack.push(leftChild);
+            stack.push(rightChild);
         }
     }
 
