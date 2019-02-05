@@ -1,0 +1,12 @@
+/*
+!/shaders
+!/data
+
+!.gitignore
+
+#ignore everything in src except cg and main
+!src/
+src/*
+!src/cg.cpp
+!src/cg.h
+!src/main.cpp
